@@ -18,7 +18,7 @@ class Timetable(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return "Jadwal"
+        return "{} {}".format(self.token, self.subject.name)
 
 
 class StudentAttendance(models.Model):

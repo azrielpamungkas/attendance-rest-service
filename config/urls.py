@@ -45,6 +45,7 @@ urlpatterns = [
     path('student/timetables/', views.StudentTimetables.as_view()),
     path('student/history/', views.StudentHistory.as_view()),
     path('student/submit/', views.SubmitAttendance.as_view()),
+    path('student/statistic/', views.StudentStatistic.as_view()),
     path('doc/', schema_view.with_ui('swagger',
                                      cache_timeout=0), name='schema-swagger-ui')
 
