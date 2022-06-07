@@ -18,8 +18,8 @@ import random
 
 def c_lecture(user):
     try:
-        current_lecture = Timetable.objects.all().filter(date=datetime.date.today()).filter(start_time__lte=datetime.datetime.now().time()
-                                                                                            ).filter(end_time__gt=datetime.datetime.now().time()).filter(subject__classroom__student=user).first()
+        current_lecture = Timetable.objects.all().filter(date=datetime.date.today()).filter(start_time__lte=datetime.datetime.now(
+        ).time()).filter(end_time__gt=datetime.datetime.now().time()).filter(subject__classroom__student=user).first()
         # current_lecture = Timetable.objects.get(date=datetime.date.today(), start_time__lte=datetime.datetime.now().time(), end_time__gt=datetime.datetime.now().time(),subject__classroom__student=user)
         return current_lecture
     except ObjectDoesNotExist:
@@ -90,7 +90,7 @@ class SubmitAttendance(APIView):
                         return Response({'data': serializer.errors})
                 return Response({'status_code': 13, 'message': 'Anda diluar titik point'})
             return Response({"status_code": 12, "message": "Token anda salah"})
-        return Response('Tidak Ada Kelas Saat Ini')
+        return Response({'status_code': 17, 'message': 'Tidak ada kelas'})
 
 
 class StudentDashboard(APIView):
