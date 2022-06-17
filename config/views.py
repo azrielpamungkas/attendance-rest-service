@@ -61,7 +61,7 @@ class SubmitAttendance(APIView):
                      'message': 'Anda sudah absen',
                      'data': {
                          'name': data.subject.name,
-                         'address': location.address,
+                         'address': location,
                          'teacher': "{} {}".format(
                              data.subject.teacher.first_name,
                              data.subject.teacher.last_name),
@@ -76,7 +76,7 @@ class SubmitAttendance(APIView):
                  'message': 'ada kelas',
                  'data': {
                      'name': data.subject.name,
-                     'address': location.address,
+                     'address': location,
                      'teacher': "{} {}".format(
                          data.subject.teacher.first_name,
                          data.subject.teacher.last_name),
