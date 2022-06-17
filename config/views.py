@@ -76,6 +76,7 @@ class SubmitAttendance(APIView):
                  'message': 'ada kelas',
                  'data': {
                      'name': data.subject.name,
+                     'address': location.address,
                      'teacher': "{} {}".format(
                          data.subject.teacher.first_name,
                          data.subject.teacher.last_name),
