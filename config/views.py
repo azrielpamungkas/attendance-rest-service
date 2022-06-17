@@ -74,8 +74,8 @@ class SubmitAttendance(APIView):
 
             # if submit_data['token'] == c_lecture(request.user.id).token:
             if submit_data['token'] == 'TEST':
-                # if dis <= radius:
-                if True:
+                if dis <= radius:
+                    # if True:
                     del submit_data['lat']
                     del submit_data['lng']
                     serializer = serializers.SubmitAttendanceSerializer(

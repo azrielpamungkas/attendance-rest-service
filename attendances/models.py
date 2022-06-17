@@ -21,3 +21,6 @@ class StudentAttendance(models.Model):
 
     def __str__(self) -> str:
         return "{} {}".format(self.name, self.status)
+
+    def save(self):
+        pass
