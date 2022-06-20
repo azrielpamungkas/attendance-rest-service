@@ -38,9 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'classrooms',
-    'timetables',
-    'attendances',
+    'apps.classrooms',
+    'apps.attendances',
 
     'rest_framework',
     'rest_framework.authtoken',
