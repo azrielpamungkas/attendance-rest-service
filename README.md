@@ -9,18 +9,16 @@
 
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![GNUGPLv3][license-shield]][license-url]]
+
+
+<!-- MARKDOWN LINKS & IMAGES -->
+<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+![contributors-shield](https://img.shields.io/github/contributors/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge)
+![forks-shield](https://img.shields.io/github/forks/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge)
+![stars-shield](https://img.shields.io/github/stars/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge)
+![issues-shield](https://img.shields.io/github/issues/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge)
+![license](https://img.shields.io/github/license/azrielpamungkas/attendance-rest-service?label=license&style=for-the-badge)
+
 
 <!-- PROJECT LOGO -->
 <br />
@@ -81,17 +79,4 @@ Project Link: [https://github.com/azrielpamungkas/attendance-rest-service](https
 
 
 
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge
-[contributors-url]: https://github.com/azrielpamungkas/attendance-rest-service/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge
-[forks-url]: https://github.com/github_username/azrielpamungkas/attendance-rest-service/network/members
-[stars-shield]: https://img.shields.io/github/stars/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge
-[stars-url]: https://github.com/azrielpamungkas/attendance-rest-service/stargazers
-[issues-shield]: https://img.shields.io/github/issues/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge
-[issues-url]: https://github.com/azrielpamungkas/attendance-rest-service/issues
-[license-shield]: https://img.shields.io/github/license/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge
-[license-url]: https://github.com/azrielpamungkas/attendance-rest-service/blob/main/LICENSE
 
