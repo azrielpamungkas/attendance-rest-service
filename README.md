@@ -93,5 +93,5 @@ Project Link: [https://github.com/azrielpamungkas/attendance-rest-service](https
 [issues-shield]: https://img.shields.io/github/issues/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge
 [issues-url]: https://github.com/azrielpamungkas/attendance-rest-service/issues
 [license-shield]: https://img.shields.io/github/license/azrielpamungkas/attendance-rest-service.svg?style=for-the-badge
-[license-url]: https://github.com/azrielpamungkas/attendance-rest-service/blob/master/LICENSE.txt
+[license-url]: https://github.com/azrielpamungkas/attendance-rest-service/blob/main/LICENSE
 
