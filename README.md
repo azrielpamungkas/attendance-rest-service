@@ -20,7 +20,7 @@
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
-[![GNU GPLv3][license-shield]][license-url]
+[![GNUGPLv3][license-shield]][license-url]]
 
 <!-- PROJECT LOGO -->
 <br />
