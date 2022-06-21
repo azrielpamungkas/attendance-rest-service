@@ -184,7 +184,7 @@ class StudentSubmitAttendance(APIView):
     def get(self, request):
         lat = self.request.query_params.get('lat'),
         lng = self.request.query_params.get('lng')
-        location = detecor(lat=lat, lng=lng)
+        location = detecor(lat=lat[0], lng=lng[0])
         data = current_lecture(request.user.id)
         if data:
             detail_lecture = {
