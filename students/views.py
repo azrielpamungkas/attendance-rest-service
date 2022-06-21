@@ -44,11 +44,9 @@ class StudentDashboard(APIView):
         else:
             greeting = "Selamat Malam"
 
-        user = User.objects.get(id=request.user.id)
-        name = "{} {}".format(user.first_name, user.last_name)
         data = {'status_code': '000',
                 'data': {'greet': greeting,
-                         }}
+                         'name': request.user.first_name + " " + request.user.last_name}}
         try:
             lecture = current_lecture(request.user.id)
             data['data']['current_lecture'] = {
