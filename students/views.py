@@ -182,9 +182,8 @@ class StudentSubmitAttendance(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        lat = self.request.query_params.get('lat'),
-        lng = self.request.query_params.get('lng')
-        location = detecor(lat=lat[0], lng=lng[0])
+        geo = self.request.query_params.get('geo'),
+        location = detecor(geo)
         data = current_lecture(request.user.id)
         if data:
             detail_lecture = {
