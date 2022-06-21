@@ -7,12 +7,9 @@ from rest_framework.authtoken.views import ObtainAuthToken
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Snippets API",
+        title="Attendance Rest Service",
         default_version='v1',
-        description="Test description",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
-        license=openapi.License(name="BSD License"),
+        license=openapi.License(name="GNU GPLv3"),
     ),
     public=True,
     permission_classes=[permissions.AllowAny],
@@ -22,10 +19,9 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('api/login/', ObtainAuthToken.as_view()),
-    path('doc/', schema_view.with_ui('swagger',
-                                     cache_timeout=0), name='schema-swagger-ui'),
-    path('student/', include('students.urls'))
-
+    path('api/v1/login/', ObtainAuthToken.as_view()),
+    path('api/v1/doc/', schema_view.with_ui('swagger',
+                                            cache_timeout=0), name='schema-swagger-ui'),
+    path('api/v1/student/', include('students.urls'))
 
 ]

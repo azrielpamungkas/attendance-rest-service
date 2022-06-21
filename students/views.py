@@ -3,8 +3,8 @@ import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
-from django.contrib.auth.models import User
-from geopy.geocoders import Nominatim
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from utils.gps import validation, detecor
 from apps.classrooms.models import ClassroomTimetable, ClassroomAttendance
 from students import serializers
