@@ -2,11 +2,10 @@ from math import radians, cos, sin, asin, sqrt
 from geopy.geocoders import Nominatim
 
 
-def detecor(lat, lng):
+def detecor(geo):
     try:
-        coordinate = f"{lat}, {lng}"
         geolocator = Nominatim(user_agent="coordinateconverter")
-        return geolocator.reverse(coordinate).address
+        return geolocator.reverse(geo).address
     except:
         return "Antah Berantah"
 
