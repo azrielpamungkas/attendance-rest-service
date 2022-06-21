@@ -53,7 +53,7 @@ class ClassroomTimetable(models.Model):
         for student in self.subject.classroom.student.all():
             print(student)
             ClassroomAttendance.objects.create(
-                name=f"{student.first_name} {student.last_name}",
+                student=self.student.id,
                 status="ALPHA",
                 timetable=self)
             ClassroomAttendance.save(self, *args, **kwargs)
