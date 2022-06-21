@@ -44,13 +44,10 @@ class StudentDashboard(APIView):
         else:
             greeting = "Selamat Malam"
 
-        quote = "Apapun yang terjadi tetaplah bernafas"
         user = User.objects.get(id=request.user.id)
         name = "{} {}".format(user.first_name, user.last_name)
         data = {'status_code': '000',
                 'data': {'greet': greeting,
-                         'quote': quote,
-                         'name': name,
                          }}
         try:
             lecture = current_lecture(request.user.id)
