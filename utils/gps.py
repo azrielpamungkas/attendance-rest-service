@@ -30,8 +30,8 @@ def haversine(lon1, lat1, lon2, lat2):
 def validation(lat, lng):
     lat1 = -6.990244896200767
     lon1 = 110.42050151945978
-    lat2 = float(lat)  # test_point[0]['lat']
-    lon2 = float(lng)  # test_point[0]['lng']
+    lat2 = float(lat)
+    lon2 = float(lng)
 
     radius = 0.06  # in kilometer
 
