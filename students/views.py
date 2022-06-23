@@ -188,7 +188,6 @@ class StudentSubmitAttendance(APIView):
         if data:
             detail_lecture = {
                 'name': data.subject.name,
-                'address': location,
                 'teacher': "{} {}".format(
                     data.subject.teacher.first_name,
                     data.subject.teacher.last_name),
@@ -202,11 +201,13 @@ class StudentSubmitAttendance(APIView):
             if ClassroomAttendance.objects.filter(student_id=request.user.id, id=data.id):
                 return Response({
                     'status_code': 14,
+                    'address': location,
                     'message': 'Anda sudah absen',
                     'data': detail_lecture
                 })
             return Response({
                 'status_code': 11,
+                'address': location,
                 'message': 'ada kelas',
                 'data': detail_lecture,
             })
