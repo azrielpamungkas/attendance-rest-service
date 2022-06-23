@@ -226,8 +226,8 @@ class StudentSubmitAttendance(APIView):
             # Check Token
             if submit_data['token'] == 'TEST':
                 # Check Coordinate
-                if validation(lat=submit_data.pop('lat', 0).pop(),
-                              lng=submit_data.pop('lng', 0).pop()):
+                if validation(lat=submit_data.pop('lat', 0)[0],
+                              lng=submit_data.pop('lng', 0)[0]):
                     serializer = serializers.SubmitAttendanceSerializer(
                         data=submit_data)
                     if serializer.is_valid():
