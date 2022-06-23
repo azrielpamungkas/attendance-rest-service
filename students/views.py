@@ -223,11 +223,13 @@ class StudentSubmitAttendance(APIView):
             submit_data = request.data.copy()
             submit_data['student'] = request.user.id
             submit_data['timetable'] = lecture.id
+            lat = submit_data.pop('lat', 0)[0]
+            lng = submit_data.pop('lng', 0)[0]
             # Check Token
             if submit_data['token'] == 'TEST':
                 # Check Coordinate
-                if validation(lat=submit_data.pop('lat', 0)[0],
-                              lng=submit_data.pop('lng', 0)[0]):
+                if validation(lat=1,
+                              lng=1):
                     serializer = serializers.SubmitAttendanceSerializer(
                         data=submit_data)
                     if serializer.is_valid():
