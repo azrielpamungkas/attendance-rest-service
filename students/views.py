@@ -8,6 +8,7 @@ from drf_yasg import openapi
 from utils.gps import validation, detecor
 from apps.classrooms.models import ClassroomTimetable, ClassroomAttendance
 from students import serializers
+from apps.attendances.views import current_attendance
 
 
 def current_lecture(user_id):
@@ -47,6 +48,7 @@ class StudentDashboard(APIView):
         data = {'status_code': '000',
                 'data': {'greet': greeting,
                          'name': request.user.first_name + " " + request.user.last_name,
+                         'current_attendance': {},
                          'current_lecture': {}}}
         try:
             lecture = current_lecture(request.user.id)
@@ -59,6 +61,12 @@ class StudentDashboard(APIView):
                     lecture.start_time.strftime("%H:%M"),
                     lecture.end_time.strftime("%H:%M")),
             }
+            if request.user.groups.filter(name='student').exists():
+                current = current_attendance('MRD')
+                data['current_attendance'] = {
+                    'work_time': current.work_time,
+                    'home_time': current.home_time,
+                }
             return Response(data)
         except:
             return Response(data)
