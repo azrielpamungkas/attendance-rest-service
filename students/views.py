@@ -46,7 +46,8 @@ class StudentDashboard(APIView):
 
         data = {'status_code': '000',
                 'data': {'greet': greeting,
-                         'name': request.user.first_name + " " + request.user.last_name}}
+                         'name': request.user.first_name + " " + request.user.last_name,
+                         'current_lecture': {}}}
         try:
             lecture = current_lecture(request.user.id)
             data['data']['current_lecture'] = {
@@ -223,10 +224,15 @@ class StudentSubmitAttendance(APIView):
             submit_data = request.data.copy()
             submit_data['student'] = request.user.id
             submit_data['timetable'] = lecture.id
+
             lat = submit_data.pop('lat', 0)
             lng = submit_data.pop('lng', 0)
+
+            if isinstance(lat, list):
+                lat = lat[0]
+                lng = lng[0]
             # Check Token
-            if submit_data['token'] == 'TEST':
+            if submit_data['token'] == lecture.token:
                 # Check Coordinate
                 if validation(lat=lat, lng=lng):
                     serializer = serializers.SubmitAttendanceSerializer(
