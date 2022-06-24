@@ -26,20 +26,20 @@ class AttendanceView(APIView):
         if request.user.groups.filter(name='student').exists():
             current = current_attendance('MRD')
             print(current)
-        if current != None:
-            response['data'] = {"role": current.role, "date": current.date, 'work_time': current.work_time,
-                                'home_time': current.home_time}
-            try:
-                obj = Attendance.objects.all().filter(
-                    user=request.user.id,
-                    timetable__date=datetime.date.today()).first()
-                response['data']['clock_in'] = obj.clock_in
-                response['data']['clock_out'] = obj.clock_out
-                return Response(response)
-            except:
-                response['data']['clock_in'] = "--:--"
-                response['data']['clock_out'] = "--:--"
-                return Response(response)
+            if current != None:
+                response['data'] = {"role": current.role, "date": current.date, 'work_time': current.work_time,
+                                    'home_time': current.home_time}
+                try:
+                    obj = Attendance.objects.all().filter(
+                        user=request.user.id,
+                        timetable__date=datetime.date.today()).first()
+                    response['data']['clock_in'] = obj.clock_in
+                    response['data']['clock_out'] = obj.clock_out
+                    return Response(response)
+                except:
+                    response['data']['clock_in'] = "--:--"
+                    response['data']['clock_out'] = "--:--"
+                    return Response(response)
         return Response({'error': 'tidak ada kelas', 'data': {
             'work_time': '--:--',
             'home_time': '--:--',
