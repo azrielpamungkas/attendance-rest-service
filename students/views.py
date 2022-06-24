@@ -49,7 +49,8 @@ class StudentDashboard(APIView):
                 'data': {'greet': greeting,
                          'name': request.user.first_name + " " + request.user.last_name,
                          'current_attendance': {},
-                         'current_lecture': {}}}
+                         'current_lecture': {}
+                         }}
         try:
             lecture = current_lecture(request.user.id)
             data['data']['current_lecture'] = {
