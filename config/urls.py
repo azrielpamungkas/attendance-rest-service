@@ -48,6 +48,6 @@ urlpatterns = [
     path('api/v1/doc/', schema_view.with_ui('swagger',
                                             cache_timeout=0), name='schema-swagger-ui'),
     path('api/v1/student/', include('students.urls')),
-    path('api/v1/', include('apps.attendances.urls')),
+    path('api/v1/attendance/', include('apps.attendances.urls')),
 
 ]

@@ -1,5 +1,6 @@
 from datetime import date
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class AttendanceTimetable(models.Model):
@@ -24,8 +25,9 @@ class AttendanceTimetable(models.Model):
 
 
 class Attendance(models.Model):
-    clock_in = models.TimeField()
-    clock_out = models.TimeField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    clock_in = models.TimeField(null=True, blank=True)
+    clock_out = models.TimeField(null=True, blank=True)
     status = models.CharField(max_length=20)
     timetable = models.ForeignKey(
         AttendanceTimetable, on_delete=models.CASCADE)
