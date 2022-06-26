@@ -46,11 +46,11 @@ class AttendanceView(APIView):
                     obj = Attendance.objects.all().filter(
                         user=request.user.id,
                         timetable__date=datetime.date.today()).first()
-                    response['clock_in'] = obj.clock_in
-                    response['clock_out'] = obj.clock_out
+                    response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute}"
+                    response['clock_out'] = f"{obj.clock_out.hour}:{obj.clock_out.minute}"
                 except:
-                    response['clock_in'] = ''
-                    response['clock_out'] = ''
+                    response['clock_in'] = '__:__'
+                    response['clock_out'] = '__:__'
                 return Response(response)
             return Response({'message': {
                 'status': 'info',
@@ -74,8 +74,8 @@ class AttendanceView(APIView):
                     response = {'status': 200,
                                 'attendance_type': 'Done!',
                                 'message': 'anda berhasil clock out',
-                                'clock_in': obj.clock_in,
-                                'clock_out': obj.clock_out}
+                                'clock_in': f"{obj.clock_in.hour}:{obj.clock_in.minute}",
+                                'clock_out': f"{obj.clock_out.hour}:{obj.clock_out.minute}"}
                     obj.save()
                     return Response(response)
                 return Response("Anda sudah absen untuk saat ini")
@@ -93,7 +93,7 @@ class AttendanceView(APIView):
                 response = {'status': 200,
                             'attendance_type': 'Clock-Out',
                             'message': 'anda berhasil clock in',
-                            'clock_in': obj.clock_in,
-                            'clock_out': '--:--'}
+                            'clock_in': f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB",
+                            'clock_out': '__:__'}
                 obj.save()
                 return Response(response)
