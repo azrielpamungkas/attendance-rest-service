@@ -74,8 +74,8 @@ class AttendanceView(APIView):
                     obj.save()
                     return Response({'status': 200,
                                      'message': 'anda berhasil clock out',
-                                     'clock_in': obj.clock_in,
-                                     'clock_out': obj.clock_out})
+                                     'clock_in': 1212,
+                                     'clock_out': 1212})
                 return Response("Anda sudah absen untuk saat ini")
             except ObjectDoesNotExist:
                 obj = Attendance.objects.create(
