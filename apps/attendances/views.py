@@ -27,8 +27,8 @@ class AttendanceView(APIView):
             'date': None,
             'work_time': None,
             'home_time': None,
-            'clock_in': None,
-            'clock_out': None,
+            'clock_in': "__:__",
+            'clock_out': "__:__,
             'user': {
                 'address': detecor(geo=geo)
             }
@@ -46,8 +46,8 @@ class AttendanceView(APIView):
                     obj = Attendance.objects.all().filter(
                         user=request.user.id,
                         timetable__date=datetime.date.today()).first()
-                    response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute}"
-                    response['clock_out'] = f"{obj.clock_out.hour}:{obj.clock_out.minute}"
+                    response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB"
+                    response['clock_out'] = f"{obj.clock_out.hour}:{obj.clock_out.minute} WIB"
                 except:
                     response['clock_in'] = '__:__'
                     response['clock_out'] = '__:__'
