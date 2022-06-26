@@ -71,11 +71,13 @@ class AttendanceView(APIView):
                     user=request.user.id, timetable=attendance.id)
                 if obj.clock_in != None and obj.clock_out == None:
                     obj.clock_out = time
+                    response = {'status': 200,
+                                'attendance_type': 'Done!',
+                                'message': 'anda berhasil clock out',
+                                'clock_in': obj.clock_in,
+                                'clock_out': obj.clock_out}
                     obj.save()
-                    return Response({'status': 200,
-                                     'message': 'anda berhasil clock out',
-                                     'clock_in': 1212,
-                                     'clock_out': 1212})
+                    return Response(response)
                 return Response("Anda sudah absen untuk saat ini")
             except ObjectDoesNotExist:
                 obj = Attendance.objects.create(
@@ -88,8 +90,10 @@ class AttendanceView(APIView):
                     obj.status = 'H'
                 else:
                     obj.status = 'T'
+                response = {'status': 200,
+                            'attendance_type': 'Clock-Out',
+                            'message': 'anda berhasil clock in',
+                            'clock_in': obj.clock_in,
+                            'clock_out': '--:--'}
                 obj.save()
-                return Response({'status': 200,
-                                 'message': 'anda berhasil clock in',
-                                 'clock_in': obj.clock_in,
-                                 'clock_out': '--:--'})
+                return Response(response)
