@@ -64,10 +64,11 @@ class AttendanceView(APIView):
     def post(self, request):
         time = datetime.datetime.now().time()
         if request.user.groups.filter(name='student').exists():
-            attendance = attendance = AttendanceTimetable.objects.all().filter(
+            attendance = AttendanceTimetable.objects.all().filter(
                 date=datetime.date.today()).filter(role="MRD").first()
             try:
-                obj = Attendance.objects.get(user=request.user.id)
+                obj = Attendance.objects.get(
+                    user=request.user.id, timetable=attendance.id)
                 if obj.clock_in != None and obj.clock_out == None:
                     obj.clock_out = time
                     obj.save()
