@@ -45,9 +45,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/login/', ObtainToken.as_view()),
-    path('api/v1/doc/', schema_view.with_ui('swagger',
-                                            cache_timeout=0), name='schema-swagger-ui'),
+    path('docs/', schema_view.with_ui('redoc',
+                                      cache_timeout=0)),
     path('api/v1/student/', include('students.urls')),
-    path('api/v1/attendance/', include('apps.attendances.urls')),
+    path('v1/attendance', include('apps.attendances.urls')),
 
 ]

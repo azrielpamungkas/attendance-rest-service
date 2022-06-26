@@ -3,12 +3,13 @@ import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 from utils.gps import validation, detecor
 from apps.classrooms.models import ClassroomTimetable, ClassroomAttendance
 from students import serializers
-from apps.attendances.views import current_attendance
+from apps.attendances.models import AttendanceTimetable
+
+# from drf_yasg.utils import swagger_auto_schema
+# from drf_yasg import openapi
 
 
 def current_lecture(user_id):
@@ -63,7 +64,8 @@ class StudentDashboard(APIView):
                     lecture.end_time.strftime("%H:%M")),
             }
             if request.user.groups.filter(name='student').exists():
-                current = current_attendance('MRD')
+                current = AttendanceTimetable.objects.all().filter(
+                    date=datetime.date.today()).filter(role="MRD").first()
                 data['current_attendance'] = {
                     'work_time': current.work_time,
                     'home_time': current.home_time,
