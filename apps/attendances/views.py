@@ -28,7 +28,7 @@ class AttendanceView(APIView):
             'work_time': None,
             'home_time': None,
             'clock_in': "__:__",
-            'clock_out': "__:__,
+            'clock_out': "__:__",
             'user': {
                 'address': detecor(geo=geo)
             }
