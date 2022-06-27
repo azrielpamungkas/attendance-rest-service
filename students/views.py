@@ -142,7 +142,8 @@ class StudentHistory(APIView):
         for h in history:
             num += 1
             data['data'][num] = {
-                'name': h.student.username,
+                'name': f"{h.student.firs_name} {h.student.last_name}",
+                'username': h.student.username,
                 'status': h.status,
                 'subject': h.timetable.subject.name,
                 'date': h.timetable.date.strftime("%A %-d %B %Y"),
