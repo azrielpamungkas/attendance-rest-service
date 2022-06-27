@@ -265,7 +265,7 @@ class StudentSubmitAttendance(APIView):
                                      'message': 'Anda sudah absen'})
                 # return Response({'status_code': 911,
                 #                 'data': serializer.errors})
-                return Response({'status_code': 15,
+                return Response({'status_code': 13,
                                  'message': 'anda di luar titik poinnt'})
             # Error Token
             return Response({"status_code": 12, "message": "Token anda salah"})
