@@ -44,7 +44,7 @@ class ObtainToken(ObtainAuthToken):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
-    path('api/v1/login/', ObtainToken.as_view()),
+    path('v1/login/', ObtainToken.as_view()),
     path('docs/', schema_view.with_ui('redoc',
                                       cache_timeout=0)),
     path('api/v1/student/', include('students.urls')),
