@@ -46,8 +46,14 @@ class AttendanceView(APIView):
                     obj = Attendance.objects.all().filter(
                         user=request.user.id,
                         timetable__date=datetime.date.today()).first()
-                    response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB"
-                    response['clock_out'] = f"{obj.clock_out.hour}:{obj.clock_out.minute} WIB"
+                    if obj.clock_in and obj.clock_out != None:
+                        response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB"
+                        response['clock_out'] = f"{obj.clock_out.hour}:{obj.clock_out.minute} WIB"
+                        response['attendance_type'] = 'done'
+                    elif obj.clock_in != None and obj.clock_out == None:
+                        response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB"
+                        response['attendance_type'] = 'Clock-Out'
+
                 except:
                     response['clock_in'] = '__:__'
                     response['clock_out'] = '__:__'
@@ -72,13 +78,16 @@ class AttendanceView(APIView):
                 if obj.clock_in != None and obj.clock_out == None:
                     obj.clock_out = time
                     response = {'status': 200,
-                                'attendance_type': 'Done!',
+                                'attendance_type': 'done',
                                 'message': 'anda berhasil clock out',
-                                'clock_in': f"{obj.clock_in.hour}:{obj.clock_in.minute}",
-                                'clock_out': f"{obj.clock_out.hour}:{obj.clock_out.minute}"}
+                                'clock_in': f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB",
+                                'clock_out': f"{obj.clock_out.hour}:{obj.clock_out.minute} WIB"}
                     obj.save()
                     return Response(response)
-                return Response("Anda sudah absen untuk saat ini")
+                return Response({
+                    'error': 'invalid_post',
+                    'error_description': 'Anda sudah absen untuk saat ini'
+                })
             except ObjectDoesNotExist:
                 obj = Attendance.objects.create(
                     user=User.objects.get(id=request.user.id),
@@ -92,7 +101,7 @@ class AttendanceView(APIView):
                     obj.status = 'T'
                 response = {'status': 200,
                             'attendance_type': 'Clock-Out',
-                            'message': 'anda berhasil clock in',
+                            'message': 'Anda berhasil clock in',
                             'clock_in': f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB",
                             'clock_out': '__:__'}
                 obj.save()
