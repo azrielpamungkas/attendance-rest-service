@@ -254,6 +254,7 @@ class StudentSubmitAttendance(APIView):
                                                               )
 
                     if student and student.status == "ALPHA":
+                        submit_data['status'] = "H"
                         student.status = submit_data['status']
                         student.save()
                         return Response(
