@@ -53,7 +53,6 @@ class AttendanceView(APIView):
                     elif obj.clock_in != None and obj.clock_out == None:
                         response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB"
                         response['attendance_type'] = 'Clock-Out'
-
                 except:
                     response['clock_in'] = '__:__'
                     response['clock_out'] = '__:__'

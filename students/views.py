@@ -246,24 +246,24 @@ class StudentSubmitAttendance(APIView):
             if submit_data['token'] == lecture.token:
                 # Check Coordinate
                 if validation(lat=lat, lng=lng):
-                    serializer = serializers.SubmitAttendanceSerializer(
-                        data=submit_data)
-                    if serializer.is_valid():
-                        student = ClassroomAttendance.objects.get(student=request.user.id,
-                                                                  timetable=submit_data['timetable']
-                                                                  )
+                    # serializer = serializers.SubmitAttendanceSerializer(
+                    #     data=submit_data)
+                    # if serializer.is_valid():
+                    student = ClassroomAttendance.objects.get(student=request.user.id,
+                                                              timetable=submit_data['timetable']
+                                                              )
 
-                        if student and student.status == "ALPHA":
-                            student.status = submit_data['status']
-                            student.save()
-                            return Response(
-                                {'status_code': 15,
-                                    'message': 'Anda Berhasil Absen',
-                                 })
-                        return Response({'status_code': 14,
-                                         'message': 'Anda sudah absen'})
-                    return Response({'status_code': 911,
-                                    'data': serializer.errors})
+                    if student and student.status == "ALPHA":
+                        student.status = submit_data['status']
+                        student.save()
+                        return Response(
+                            {'status_code': 15,
+                                'message': 'Anda Berhasil Absen',
+                             })
+                    return Response({'status_code': 14,
+                                     'message': 'Anda sudah absen'})
+                # return Response({'status_code': 911,
+                #                 'data': serializer.errors})
                 return Response({'status_code': 15,
                                  'message': 'anda di luar titik poinnt'})
             # Error Token
