@@ -1,5 +1,4 @@
 import datetime
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
@@ -10,6 +9,13 @@ from apps.attendances.models import AttendanceTimetable
 
 # from drf_yasg.utils import swagger_auto_schema
 # from drf_yasg import openapi
+#             HTTP/1.1 400 Bad Request
+# {
+#     "error": {
+#         "status": 400,
+#         "message": "invalid id"
+#     }
+# }
 
 
 def current_lecture(user_id):
@@ -24,6 +30,90 @@ def current_lecture(user_id):
         return current_lecture
     except:
         return None
+
+
+class StudentSubmitAttendance(APIView):
+    # path: student/submit/
+    serializer_class = serializers.SubmitAttendanceSerializer
+
+    def get(self, request):
+        geo = self.request.query_params.get('geo'),
+        location = detecor(geo)
+        scheduled_obj = current_lecture(request.user.id)
+        if scheduled_obj:
+            class_time = "{} - {} WIB".format(
+                scheduled_obj.start_time.strftime("%H:%M"),
+                scheduled_obj.end_time.strftime("%H:%M"))
+            teacher_name = "{} {}".format(
+                scheduled_obj.subject.teacher.first_name,
+                scheduled_obj.subject.teacher.last_name)
+            res = {
+                'is_attended': False,
+                'name': scheduled_obj.subject.name,
+                'teacher': teacher_name,
+                'time': class_time,
+                'user': {
+                    'address': location
+                }
+            }
+            try:
+                student_obj = ClassroomAttendance.objects.get(
+                    id=scheduled_obj.id)
+                if student_obj.status is not "ALPHA":
+                    res['is_attended'] = True
+            except:
+                pass
+            return Response(res)
+        return Response({'error': {
+            'status': 404,
+            'message': 'tidak ada kelas saat ini'
+        }
+        })
+
+    def post(self, request):
+        lecture = current_lecture(user_id=request.user.id)
+        if lecture:
+            timetable_id = lecture.id
+            student_id = request.user.id
+            latitude = request.data['lat']
+            longitude = request.data['lng']
+            token = request.data['token']
+            # Check Token
+            if token is lecture.token:
+                # Check Coordinate
+                if validation(lat=latitude, lng=longitude):
+                    try:
+                        time = datetime.datetime.now().time()
+                        student = ClassroomAttendance.objects.filter(student=student_id).filter(
+                            timetable=timetable_id,
+                        ).filter(timetable__start_time__lte=time,
+                                 timetable__end_time__gte=time).first()
+                    except:
+                        student = False
+                    if student and student.status is "ALPHA":
+                        student.status = "HADIR"
+                        student.save()
+                        return Response(
+                            {'success': {
+                                'status': 200,
+                                'message': 'Anda Berhasil Absen',
+                            }})
+                    return Response({'error': {
+                        'status': 409,
+                        'message': 'Anda sudah absen'
+                    }})
+                return Response({
+                    'error': {
+                        'status': 403,
+                        'message': 'Anda diluar titik point'
+                    }
+                })
+            return Response({
+                'error': {
+                    'status': 403,
+                    'message': 'Token anda salah'
+                }
+            })
 
 
 class StudentDashboard(APIView):
@@ -101,28 +191,28 @@ class StudentPresenceList(APIView):
         return Response(data)
 
 
-class StudentTimetables(APIView):
-    authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+# class StudentTimetables(APIView):
+#     authentication_classes = [authentication.SessionAuthentication]
+#     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
-        timetables = ClassroomTimetable.objects.all()
-        data = {'status_code': '000',
-                'message': "success", 'data': {
+#     def get(self, request):
+#         timetables = ClassroomTimetable.objects.all()
+#         data = {'status_code': '000',
+#                 'message': "success", 'data': {
 
-                }}
-        num = 0
-        for timetable in timetables:
-            num += 1
-            data['data'][num] = {
-                'name': timetable.subject.name,
-                'teacher': "{} {}".format(timetable.subject.teacher.first_name,  timetable.subject.teacher.last_name),
-                'date': timetable.date,
-                'start': timetable.start_time.strftime("%H:%M"),
-                'end': timetable.end_time.strftime("%H:%M"),
-            }
+#                 }}
+#         num = 0
+#         for timetable in timetables:
+#             num += 1
+#             data['data'][num] = {
+#                 'name': timetable.subject.name,
+#                 'teacher': "{} {}".format(timetable.subject.teacher.first_name,  timetable.subject.teacher.last_name),
+#                 'date': timetable.date,
+#                 'start': timetable.start_time.strftime("%H:%M"),
+#                 'end': timetable.end_time.strftime("%H:%M"),
+#             }
 
-        return Response(data)
+#         return Response(data)
 
 
 class StudentHistory(APIView):
@@ -184,89 +274,3 @@ class StudentStatistic(APIView):
             'alpha': alpha,
             'kehadiran': 1.0 - (ijin+sakit+alpha)/total
         }})
-
-
-class StudentSubmitAttendance(APIView):
-    """
-    path: student/submit/
-
-    """
-    serializer_class = serializers.SubmitAttendanceSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        geo = self.request.query_params.get('geo'),
-        location = detecor(geo)
-        data = current_lecture(request.user.id)
-        if data:
-            detail_lecture = {
-                'name': data.subject.name,
-                'teacher': "{} {}".format(
-                    data.subject.teacher.first_name,
-                    data.subject.teacher.last_name),
-                'date': data.date,
-                'token': data.token,
-                'time': "{} - {} WIB".format
-                (data.start_time.strftime("%H:%M"),
-                 data.end_time.strftime("%H:%M")),
-            }
-
-            if ClassroomAttendance.objects.filter(student_id=request.user.id, id=data.id):
-                return Response({
-                    'status_code': 14,
-                    'address': location,
-                    'message': 'Anda sudah absen',
-                    'data': detail_lecture
-                })
-            return Response({
-                'status_code': 11,
-                'address': location,
-                'message': 'ada kelas',
-                'data': detail_lecture,
-            })
-        return Response({
-            'status_code': 16,
-            'address': location,
-            'message': 'tidak ada kelas saat ini',
-        })
-
-    def post(self, request):
-        lecture = current_lecture(user_id=request.user.id)
-        if lecture:
-            submit_data = request.data.copy()
-            submit_data['student'] = request.user.id
-            submit_data['timetable'] = lecture.id
-
-            lat = submit_data.pop('lat', 0)
-            lng = submit_data.pop('lng', 0)
-
-            if isinstance(lat, list):
-                lat = lat[0]
-                lng = lng[0]
-            # Check Token
-            if submit_data['token'] == lecture.token:
-                # Check Coordinate
-                if validation(lat=lat, lng=lng):
-                    # serializer = serializers.SubmitAttendanceSerializer(
-                    #     data=submit_data)
-                    # if serializer.is_valid():
-                    student = ClassroomAttendance.objects.get(student=request.user.id,
-                                                              timetable=submit_data['timetable']
-                                                              )
-
-                    if student and student.status == "ALPHA":
-                        submit_data['status'] = "H"
-                        student.status = submit_data['status']
-                        student.save()
-                        return Response(
-                            {'status_code': 15,
-                                'message': 'Anda Berhasil Absen',
-                             })
-                    return Response({'status_code': 14,
-                                     'message': 'Anda sudah absen'})
-                # return Response({'status_code': 911,
-                #                 'data': serializer.errors})
-                return Response({'status_code': 13,
-                                 'message': 'anda di luar titik poinnt'})
-            # Error Token
-            return Response({"status_code": 12, "message": "Token anda salah"})
