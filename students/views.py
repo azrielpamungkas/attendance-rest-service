@@ -79,7 +79,8 @@ class StudentSubmitAttendance(APIView):
             longitude = request.data['lng']
             token = request.data['token']
             # Check Token
-            if token is lecture.token:
+            if token == lecture.token:
+                print("disini token")
                 # Check Coordinate
                 if validation(lat=latitude, lng=longitude):
                     try:
@@ -90,7 +91,7 @@ class StudentSubmitAttendance(APIView):
                                  timetable__end_time__gte=time).first()
                     except:
                         student = False
-                    if student and student.status is "ALPHA":
+                    if student and student.status == "ALPHA":
                         student.status = "HADIR"
                         student.save()
                         return Response(
@@ -117,9 +118,7 @@ class StudentSubmitAttendance(APIView):
 
 
 class StudentDashboard(APIView):
-    """
-    path: /student/
-    """
+    # /student/
     authentication_classes = [
         authentication.SessionAuthentication, authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -165,62 +164,8 @@ class StudentDashboard(APIView):
             return Response(data)
 
 
-class StudentPresenceList(APIView):
-
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request):
-        lectures = ClassroomTimetable.objects.all().filter(date=datetime.date.today())
-        data = {
-            'status_code': '000',
-            'message': "success",
-            'data': {'lectures': {}}
-        }
-
-        num = 0
-        for lecture in lectures:
-            num += 1
-            data['data']['lectures'][num] = {
-                'name': lecture.subject.name,
-                'start': lecture.start_time.strftime("%H:%M"),
-                'end': lecture.end_time.strftime("%H:%M"),
-                'teacher': "{} {}".format(lecture.subject.teacher.first_name, lecture.subject.teacher.last_name),
-
-            }
-
-        return Response(data)
-
-
-# class StudentTimetables(APIView):
-#     authentication_classes = [authentication.SessionAuthentication]
-#     permission_classes = [permissions.IsAuthenticated]
-
-#     def get(self, request):
-#         timetables = ClassroomTimetable.objects.all()
-#         data = {'status_code': '000',
-#                 'message': "success", 'data': {
-
-#                 }}
-#         num = 0
-#         for timetable in timetables:
-#             num += 1
-#             data['data'][num] = {
-#                 'name': timetable.subject.name,
-#                 'teacher': "{} {}".format(timetable.subject.teacher.first_name,  timetable.subject.teacher.last_name),
-#                 'date': timetable.date,
-#                 'start': timetable.start_time.strftime("%H:%M"),
-#                 'end': timetable.end_time.strftime("%H:%M"),
-#             }
-
-#         return Response(data)
-
-
 class StudentHistory(APIView):
-    """
-    path : /student/history/
-    """
-    permission_classes = [permissions.IsAuthenticated]
-
+    # /student/history/
     def get(self, request):
         history = ClassroomAttendance.objects.all().filter(student=request.user.id)
         data = {
@@ -274,3 +219,49 @@ class StudentStatistic(APIView):
             'alpha': alpha,
             'kehadiran': 1.0 - (ijin+sakit+alpha)/total
         }})
+
+
+# class StudentPresenceList(APIView):
+#     def get(self, request):
+#         lectures = ClassroomTimetable.objects.all().filter(date=datetime.date.today())
+#         data = {
+#             'status_code': '000',
+#             'message': "success",
+#             'data': {'lectures': {}}
+#         }
+
+#         num = 0
+#         for lecture in lectures:
+#             num += 1
+#             data['data']['lectures'][num] = {
+#                 'name': lecture.subject.name,
+#                 'start': lecture.start_time.strftime("%H:%M"),
+#                 'end': lecture.end_time.strftime("%H:%M"),
+#                 'teacher': "{} {}".format(lecture.subject.teacher.first_name, lecture.subject.teacher.last_name),
+
+#             }
+
+#         return Response(data)
+
+# class StudentTimetables(APIView):
+#     authentication_classes = [authentication.SessionAuthentication]
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get(self, request):
+#         timetables = ClassroomTimetable.objects.all()
+#         data = {'status_code': '000',
+#                 'message': "success", 'data': {
+
+#                 }}
+#         num = 0
+#         for timetable in timetables:
+#             num += 1
+#             data['data'][num] = {
+#                 'name': timetable.subject.name,
+#                 'teacher': "{} {}".format(timetable.subject.teacher.first_name,  timetable.subject.teacher.last_name),
+#                 'date': timetable.date,
+#                 'start': timetable.start_time.strftime("%H:%M"),
+#                 'end': timetable.end_time.strftime("%H:%M"),
+#             }
+
+#         return Response(data)
