@@ -59,7 +59,7 @@ class StudentSubmitAttendance(APIView):
             try:
                 student_obj = ClassroomAttendance.objects.get(
                     id=scheduled_obj.id)
-                if student_obj.status is not "ALPHA":
+                if student_obj.status != "ALPHA":
                     res['is_attended'] = True
             except:
                 pass
