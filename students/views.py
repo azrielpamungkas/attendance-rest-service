@@ -60,6 +60,7 @@ class StudentSubmitAttendance(APIView):
                 id=scheduled_obj.id).filter(student=request.user.id).first()
             if student_obj.status != "ALPHA":
                 res['is_attended'] = True
+
             return Response(res)
         return Response({'error': {
             'status': 404,
