@@ -56,13 +56,10 @@ class StudentSubmitAttendance(APIView):
                     'address': location
                 }
             }
-            try:
-                student_obj = ClassroomAttendance.objects.get(
-                    id=scheduled_obj.id)
-                if student_obj.status != "ALPHA":
-                    res['is_attended'] = True
-            except:
-                pass
+            student_obj = ClassroomAttendance.objects.filter(
+                id=scheduled_obj.id).filter(student=request.user.id).first()
+            if student_obj.status != "ALPHA":
+                res['is_attended'] = True
             return Response(res)
         return Response({'error': {
             'status': 404,
