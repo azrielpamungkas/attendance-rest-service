@@ -57,7 +57,7 @@ class StudentSubmitAttendance(APIView):
                 }
             }
             student_obj = ClassroomAttendance.objects.filter(
-                id=scheduled_obj.id).filter(student=request.user.id).first()
+                timetable__id=scheduled_obj.id).get(student=request.user.id)
             if student_obj.status != "ALPHA":
                 res['is_attended'] = True
 
