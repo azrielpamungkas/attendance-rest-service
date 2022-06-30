@@ -90,8 +90,8 @@ class StudentSchedule(APIView):
         )
         res = {}
         for obj in clasroom_timetable_qry:
-            res.setdefault(obj.date.strftime("%m/%d/%Y"), [])
-            res[obj.date.strftime("%m/%d/%Y")].append(
+            res.setdefault(obj.date.strftime("%-m/%-d/%Y"), [])
+            res[obj.date.strftime("%-m/%-d/%Y")].append(
                 {
                     "id": obj.id,
                     "on_going": (
