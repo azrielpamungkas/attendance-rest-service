@@ -1,107 +1,155 @@
 from rest_framework.views import APIView
 from . import serializers
-from utils.gps import detecor
+from utils.gps import detector
 from .models import Attendance, AttendanceTimetable
 from rest_framework.response import Response
-from rest_framework import permissions
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied
 import datetime
 from django.contrib.auth.models import User
+from drf_yasg.utils import swagger_auto_schema
+
 # Create your views here.
+# Bikin serializer untuk ini agar bisa detect geo nantinya
+
+from .docs import AttendanceDoc
+
+doc = AttendanceDoc()
 
 
 class AttendanceView(APIView):
-    # /v1/attendance?geo={lat},{lng}
-    # def current_attendance(role):
-    #     try:
-    #         current = AttendanceTimetable.objects.all().filter(
-    #             date=datetime.date.today()).filter(role=role).first()
-    #         return current
-    #     except:
-    #         return None
+    # serializer_class = serializers.AttendanceSer
 
-    def get(self, request):
-        geo = self.request.query_params.get('geo')
-        response = {
-            'attendance_type': None,
-            'date': None,
-            'work_time': None,
-            'home_time': None,
-            'clock_in': "__:__",
-            'clock_out': "__:__",
-            'user': {
-                'address': detecor(geo=geo)
-            }
+    """
+        {
+        "attendance_type": "MRD",
+        "attendance_status": null,
+        "date": "2022-06-30",
+        "work_time": "08:51:00",
+        "home_time": "15:51:00",
+        "clock_in": null,
+        "clock_out": null,
+        "user": {
+            "address": "Soul Buoy"
         }
-        if request.user.groups.filter(name='student').exists():
-            attendance = AttendanceTimetable.objects.all().filter(
-                date=datetime.date.today()).filter(role="MRD").first()
+    }
+    """
+
+    @swagger_auto_schema(responses=doc.attendance_get)
+    def get(self, request):
+        geo = self.request.query_params.get("geo")
+        if request.user.groups.filter(name="student").exists():
+            attendance = (
+                AttendanceTimetable.objects.all()
+                .filter(date=datetime.date.today())
+                .filter(role="MRD")
+                .first()
+            )
             if attendance:
-                response['attendance_type'] = attendance.role
-                response['date'] = attendance.date
-                response['work_time'] = attendance.work_time
-                response['home_time'] = attendance.home_time
-
-                try:
-                    obj = Attendance.objects.all().filter(
-                        user=request.user.id,
-                        timetable__date=datetime.date.today()).first()
-                    if obj.clock_in and obj.clock_out != None:
-                        response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB"
-                        response['clock_out'] = f"{obj.clock_out.hour}:{obj.clock_out.minute} WIB"
-                        response['attendance_type'] = 'done'
-                    elif obj.clock_in != None and obj.clock_out == None:
-                        response['clock_in'] = f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB"
-                        response['attendance_type'] = 'Clock-Out'
-                except:
-                    response['clock_in'] = '__:__'
-                    response['clock_out'] = '__:__'
+                obj = (
+                    Attendance.objects.filter(timetable__date=datetime.date.today())
+                    .filter(user=request.user.id)
+                    .first()
+                )
+                response = {
+                    "attendance_type": attendance.role,
+                    "attendance_status": (
+                        lambda x: None
+                        if attendance is None
+                        else (
+                            "Clock-In"
+                            if x is None
+                            else (
+                                "Clock-Out"
+                                if x.clock_in != None and x.clock_out == None
+                                else "Done!"
+                            )
+                        )
+                    )(obj),
+                    "date": attendance.date,
+                    "work_time": attendance.work_time,
+                    "home_time": attendance.home_time,
+                    "clock_in": (
+                        lambda x: None
+                        if x is None
+                        else (
+                            None
+                            if x.clock_in is None
+                            else f"{x.clock_in.hour}:{x.clock_in.minute}"
+                        )
+                    )(obj),
+                    "clock_out": (
+                        lambda x: None
+                        if x is None
+                        else (
+                            None
+                            if x.clock_out is None
+                            else f"{x.clock_out.hour}:{x.clock_out.minute}"
+                        )
+                    )(obj),
+                    "user": {"address": detector(geo=geo)},
+                }
                 return Response(response)
-            return Response({'message': {
-                'status': 'info',
-                'detail': 'tidak ada jadwal untuk hari ini'
-            }})
-        return Response({'message': {
-            'status': 'warning',
-            'detail': 'user belum punya role'
-        }})
+            return Response(
+                {
+                    "message": {
+                        "status": "info",
+                        "detail": "tidak ada jadwal untuk hari ini",
+                    }
+                }
+            )
+        return PermissionDenied
 
+    @swagger_auto_schema(responses=doc.attendance_post)
     def post(self, request):
         time = datetime.datetime.now().time()
-        if request.user.groups.filter(name='student').exists():
-            attendance = AttendanceTimetable.objects.all().filter(
-                date=datetime.date.today()).filter(role="MRD").first()
-            try:
-                obj = Attendance.objects.get(
-                    user=request.user.id, timetable=attendance.id)
+        if request.user.groups.filter(name="student").exists():
+            attendance = (
+                AttendanceTimetable.objects.all()
+                .filter(date=datetime.date.today())
+                .filter(role="MRD")
+                .first()
+            )
+            obj = Attendance.objects.filter(
+                user=request.user.id, timetable=attendance.id
+            ).first()
+            if obj:
                 if obj.clock_in != None and obj.clock_out == None:
-                    obj.clock_out = time
-                    response = {'status': 200,
-                                'attendance_type': 'done',
-                                'message': 'anda berhasil clock out',
-                                'clock_in': f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB",
-                                'clock_out': f"{obj.clock_out.hour}:{obj.clock_out.minute} WIB"}
-                    obj.save()
-                    return Response(response)
-                return Response({
-                    'error': 'invalid_post',
-                    'error_description': 'Anda sudah absen untuk saat ini'
-                })
-            except ObjectDoesNotExist:
-                obj = Attendance.objects.create(
-                    user=User.objects.get(id=request.user.id),
-                    timetable=AttendanceTimetable.objects.get(
-                        id=attendance.id),
-                    clock_in=time,
+                    if time >= attendance.home_time:
+                        obj.clock_out = time
+                        obj.save()
+                        response = {
+                            "status": 200,
+                            "clock_out": f"{time.hour}:{time.minute}",
+                            "next_attendance_status": "Done!",
+                            "message": "anda berhasil clock out",
+                        }
+                        return Response(response)
+                    return Response(
+                        {
+                            "error": {
+                                "status": "invalid_clock_out",
+                                "message": "Anda belum bisa clock out untuk saat ini",
+                            }
+                        }
+                    )
+                return Response(
+                    {
+                        "error": "invalid_post",
+                        "error_description": "Anda sudah absen untuk saat ini",
+                    }
                 )
-                if time <= attendance.work_time:
-                    obj.status = 'H'
-                else:
-                    obj.status = 'T'
-                response = {'status': 200,
-                            'attendance_type': 'Clock-Out',
-                            'message': 'Anda berhasil clock in',
-                            'clock_in': f"{obj.clock_in.hour}:{obj.clock_in.minute} WIB",
-                            'clock_out': '__:__'}
-                obj.save()
+            else:
+                Attendance.objects.create(
+                    user=User.objects.get(id=request.user.id),
+                    timetable=AttendanceTimetable.objects.get(id=attendance.id),
+                    clock_in=time,
+                    status=(lambda x: "H" if x <= attendance.work_time else "T"),
+                )
+                response = {
+                    "status": 200,
+                    "clock_in": f"{time.hour}:{time.minute}",
+                    "next_attendance_status": "Clock-Out",
+                    "message": "Anda berhasil clock in",
+                }
                 return Response(response)
+        return PermissionDenied

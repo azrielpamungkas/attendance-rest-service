@@ -3,10 +3,9 @@ from students import views
 
 
 urlpatterns = [
-    path('', views.StudentDashboard.as_view()),
-    # path('presences/', views.StudentPresenceList.as_view()),
-    # path('timetables/', views.StudentTimetables.as_view()),
-    path('history/', views.StudentHistory.as_view()),
-    path('submit/', views.StudentSubmitAttendance.as_view()),
-    path('statistic/', views.StudentStatistic.as_view()),
+    path("v1/student/", views.StudentDashboard.as_view()),
+    path("v1/student/schedule/", views.StudentSchedule.as_view()),
+    path("v1/student/history/", views.StudentHistory.as_view()),
+    path("v1/student/submit/", views.StudentPresence.as_view()),
+    path("v1/student/statistic/", views.StudentStatistic.as_view()),
 ]

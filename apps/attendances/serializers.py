@@ -1,18 +1,12 @@
-from wsgiref import validate
+from dataclasses import field
 from rest_framework import serializers
-from apps.attendances.models import Attendance, AttendanceTimetable
+from .models import Attendance
 
 
-class AttendanceSerializer(serializers.Serializer):
-    clock_in = serializers.TimeField()
-    clock_out = serializers.TimeField()
-    status = serializers.CharField()
+class AttendanceSer(serializers.ModelSerializer):
+    lat = serializers.FloatField()
+    lng = serializers.FloatField()
 
-    def create(self, validated_data):
-        timetable = AttendanceTimetable.objects.get(
-            id=validated_data['timetable'])
-        attendance = Attendance(clock_in=validated_data['clock_in'],
-                                clock_out=validated_data['clock_out'],
-                                status=validated_data['status'], timetable=timetable)
-        attendance.save()
-        return attendance
+    class Meta:
+        model = Attendance
+        fields = ["lat", "lng"]
