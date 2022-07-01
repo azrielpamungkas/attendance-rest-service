@@ -7,9 +7,9 @@ class StudentDoc:
             description="Response GET",
             examples={
                 "application/json": {
-                    "greet": "Selamat Pagi",
+                    "greet": "string",
                     "currentLecture": {
-                        "subject": "Bahasa Inggris",
+                        "subject": "string",
                         "teacher": {
                             "first_name": "Andika",
                             "last_name": "Pratama",
@@ -22,6 +22,8 @@ class StudentDoc:
                     "currentAttendance": {
                         "work_time": "07:30",
                         "home_time": "15:00",
+                        "clock_in": "07:30",
+                        "clock_out": "15:00",
                     },
                     "user": {
                         "first_name": "Andika",
@@ -31,10 +33,10 @@ class StudentDoc:
             },
         ),
         "203": openapi.Response(
-            description="Response GET jika tidak ada kelas",
+            description="Tidak Ada Kelas (Nullable)",
             examples={
                 "application/json": {
-                    "greet": "Selamat Pagi",
+                    "greet": "string",
                     "currentLecture": {
                         "subject": None,
                         "teacher": {
@@ -49,6 +51,8 @@ class StudentDoc:
                     "currentAttendance": {
                         "work_time": None,
                         "home_time": None,
+                        "clock_in": None,
+                        "clock_out": None,
                     },
                     "user": {
                         "first_name": "Andika",
@@ -58,7 +62,7 @@ class StudentDoc:
             },
         ),
         "403": openapi.Response(
-            description="Jika User Tidak Student",
+            description="Jika User Tidak Mempunyai Role Student",
             examples={
                 "aplication/json": {
                     "detail": "You do not have permission to perform this action."
@@ -73,11 +77,11 @@ class StudentDoc:
                 "application/json": {
                     "Jun 2022": [
                         {"name": "Basis Data", "date": "2022-06-28", "status": "ALPHA"},
-                        {"name": "Basis Data", "date": "2022-06-29", "status": "ALPHA"},
-                        {"name": "Basis Data", "date": "2022-06-29", "status": "ALPHA"},
-                        {"name": "Basis Data", "date": "2022-06-28", "status": "ALPHA"},
-                        {"name": "Basis Data", "date": "2022-06-29", "status": "ALPHA"},
-                    ]
+                        {"name": "string", "date": "string", "status": "string"},
+                    ],
+                    "May 2022": [
+                        {"name": "string", "date": "string", "status": "string"},
+                    ],
                 }
             },
         ),
@@ -128,17 +132,6 @@ class StudentDoc:
                             "start_time": "22:02:00",
                             "end_time": "22:02:00",
                         },
-                        {
-                            "id": 10,
-                            "on_going": False,
-                            "subject": "Basis Data",
-                            "teacher": {
-                                "first_name": "Dian Nirmala Santi",
-                                "last_name": "S.Kom",
-                            },
-                            "start_time": "18:57:00",
-                            "end_time": "20:57:00",
-                        },
                     ],
                 }
             },
@@ -150,8 +143,9 @@ class StudentDoc:
             description="",
             examples={
                 "aplications/json": {
-                    "leave": 0.0,
+                    "leave": 0,
                     "absent": 0,
+                    "sick": 0,
                     "presence": 1.0,
                     "indicator": "Aman",
                 }
@@ -165,10 +159,10 @@ class StudentDoc:
             examples={
                 "application/json": {
                     "is_attended": False,
-                    "name": "Basis Data",
-                    "teacher": "Dian Nirmala Santi S.Kom",
+                    "name": "string",
+                    "teacher": "string",
                     "time": "18:57 - 20:57 WIB",
-                    "user": {"address": "Soul Buoy"},
+                    "user": {"address": "string"},
                 }
             },
         ),

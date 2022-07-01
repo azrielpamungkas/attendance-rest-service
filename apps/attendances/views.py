@@ -17,23 +17,6 @@ doc = AttendanceDoc()
 
 
 class AttendanceView(APIView):
-    # serializer_class = serializers.AttendanceSer
-
-    """
-        {
-        "attendance_type": "MRD",
-        "attendance_status": null,
-        "date": "2022-06-30",
-        "work_time": "08:51:00",
-        "home_time": "15:51:00",
-        "clock_in": null,
-        "clock_out": null,
-        "user": {
-            "address": "Soul Buoy"
-        }
-    }
-    """
-
     @swagger_auto_schema(responses=doc.attendance_get)
     def get(self, request):
         geo = self.request.query_params.get("geo")

@@ -22,13 +22,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
-    path("v1/obtain-token/", ObtainAuthToken.as_view()),
+    path("", include("accounts.urls")),
     path("", include("students.urls")),
     path("", include("apps.attendances.urls")),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
-    path(
-        "swagger/",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger",
-    ),
 ]
