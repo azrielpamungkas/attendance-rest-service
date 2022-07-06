@@ -1,12 +1,13 @@
 from rest_framework.views import APIView
 from . import serializers
 from utils.gps import detector
-from .models import Attendance, AttendanceTimetable
+from .models import Attendance, AttendanceTimetable, Leave
 from rest_framework.response import Response
 from django.core.exceptions import PermissionDenied
 import datetime
 from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
+
 
 # Create your views here.
 # Bikin serializer untuk ini agar bisa detect geo nantinya
@@ -136,3 +137,23 @@ class AttendanceView(APIView):
                 }
                 return Response(response)
         return PermissionDenied
+
+
+class LeaveView(APIView):
+    def get(self, request):
+        leave_obj = Leave.objects.filter(user=request.user.id)
+        res = {}
+        for obj in leave_obj:
+            key = obj.date.strftime("%d %Y")
+            res.setdefault(key, [])
+            res[key].append(
+                {
+                    "id": obj.id,
+                    "type": obj.type,
+                    "date": obj.date,
+                    "status": lambda x: "Waiting for Approval"
+                    if x is None
+                    else ("Approved" if x else "Cancelled")(obj.approve),
+                }
+            )
+        return Response(res)
