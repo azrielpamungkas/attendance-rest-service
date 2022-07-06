@@ -211,7 +211,12 @@ class StudentHistory(APIView):
     def get(self, request):
         lecture_histories = ClassroomAttendance.objects.filter(student=request.user.id)
         if lecture_histories != None:
-            res = {}
+            res = {
+                "user": {
+                    "first_name": request.user.first_name,
+                    "last_name": request.user.last_name,
+                }
+            }
             for history in lecture_histories:
                 month_year = "{} {}".format(
                     history.timetable.date.strftime("%b"), history.timetable.date.year
