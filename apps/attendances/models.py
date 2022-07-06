@@ -38,11 +38,11 @@ class Attendance(models.Model):
 
 class Leave(models.Model):
     class TypeLeave(models.TextChoices):
-        HALF = 1
-        FULL = 2
+        HALF = "HALF", "1"
+        FULL = "FULL", "2"
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    type = models.IntegerField(choices=TypeLeave, default=1)
+    category = models.IntegerField(choices=TypeLeave, default=1)
     date = models.DateField()
     lecture = models.ManyToManyField(ClassroomSubject)
     reason = models.TextField()
