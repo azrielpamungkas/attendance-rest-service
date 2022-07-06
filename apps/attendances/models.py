@@ -42,7 +42,7 @@ class Leave(models.Model):
         FULL = "FULL", "2"
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.IntegerField(choices=TypeLeave, default=1)
+    category = models.IntegerField(choices=TypeLeave.choices, default=1)
     date = models.DateField()
     lecture = models.ManyToManyField(ClassroomSubject)
     reason = models.TextField()
