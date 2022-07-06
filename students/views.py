@@ -100,7 +100,7 @@ class StudentSchedule(APIView):
                         else (True if x == y.id else False)
                     )(obj.id, current_lecture(request.user.id, ClassroomTimetable)),
                     "subject": obj.subject.name,
-                    "classroom": obj.classroom.grade,
+                    "classroom": obj.subject.classroom.grade,
                     "teacher": {
                         "first_name": obj.subject.teacher.first_name,
                         "last_name": obj.subject.teacher.last_name,
