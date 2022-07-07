@@ -22,3 +22,17 @@ def current_lecture(user, model):
         return current_lecture
     except:
         return None
+
+
+def current_lecture_teacher(user, model):
+    try:
+        current_lecture = (
+            model.objects.all()
+            .filter(date=datetime.date.today())
+            .filter(start_time__lte=datetime.datetime.now().time())
+            .filter(end_time__gt=datetime.datetime.now().time())
+            .get(subject__teacher=user)
+        )
+        return current_lecture
+    except:
+        return None

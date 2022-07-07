@@ -2,9 +2,37 @@ import datetime
 from django.core.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from apps.classrooms.models import ClassroomAttendance, ClassroomTimetable
+from apps.classrooms.models import (
+    ClassroomAttendance,
+    ClassroomSubject,
+    ClassroomTimetable,
+)
 from apps.attendances.models import AttendanceTimetable, Attendance
 from utils.gps import detector
+from utils.shortcuts import current_lecture_teacher
+
+
+class TeacherInfo(APIView):
+    def get(self, request):
+        res = {
+            "classrooms": [],
+            "user": {
+                "first_name": "Azriel",
+                "last_name": "Sebastian",
+                "username": "124124",
+            },
+        }
+        obj = ClassroomSubject.objects.filter(teacher=request.user.id)
+        if obj:
+            for sub in obj:
+                res["classrooms"].append(
+                    {
+                        "subject": sub.name,
+                        "grade": sub.classroom.grade,
+                    }
+                )
+            return Response(res)
+        return Response(res)
 
 
 class TeacherDashboard(APIView):
@@ -53,6 +81,38 @@ class TeacherDashboard(APIView):
                 return Response(res)
             return Response(res)
         raise PermissionDenied
+
+
+class TeacherSchedule(APIView):
+    def get(self, request):
+        clasroom_timetable_qry = ClassroomTimetable.objects.filter(
+            subject__teacher=request.user.id
+        )
+        res = {}
+        for obj in clasroom_timetable_qry:
+            res.setdefault(obj.date.strftime("%-m/%-d/%Y"), [])
+            res[obj.date.strftime("%-m/%-d/%Y")].append(
+                {
+                    "id": obj.id,
+                    "on_going": (
+                        lambda x, y: False
+                        if y == None
+                        else (True if x == y.id else False)
+                    )(
+                        obj.id,
+                        current_lecture_teacher(request.user.id, ClassroomTimetable),
+                    ),
+                    "subject": obj.subject.name,
+                    "classroom": obj.subject.classroom.grade,
+                    "teacher": {
+                        "first_name": obj.subject.teacher.first_name,
+                        "last_name": obj.subject.teacher.last_name,
+                    },
+                    "start_time": obj.start_time,
+                    "end_time": obj.end_time,
+                }
+            )
+        return Response(res)
 
 
 class DetailPresence(APIView):
