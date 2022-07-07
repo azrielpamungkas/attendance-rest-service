@@ -78,10 +78,12 @@ class DetailPresence(APIView):
                 "students": [],
             }
             for student in ClassroomAttendance.objects.filter(timetable=obj.id):
-                res["students"] += {
-                    "name": f"{student.student.first_name}",
-                    "status": f"{student.status}",
-                }
+                res["students"].append(
+                    {
+                        "name": f"{student.student.first_name}",
+                        "status": f"{student.status}",
+                    }
+                )
             return Response(res)
         return Response(
             {
