@@ -79,7 +79,7 @@ class DetailPresence(APIView):
             }
             for student in ClassroomAttendance.objects.filter(timetable=obj.id):
                 res["students"] += {
-                    "name": f"{student.user.first_name}",
+                    "name": f"{student.student.first_name}",
                     "status": f"{student.status}",
                 }
             return Response(res)
