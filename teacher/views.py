@@ -65,7 +65,9 @@ class DetailPresence(APIView):
             ClassroomTimetable.objects.filter(date=datetime.date.today())
             .filter(start_time__lte=datetime.datetime.now().time())
             .filter(end_time__gt=datetime.datetime.now().time())
-        ).filter(subject__teacher=request.user.id)
+            .filter(subject__teacher=request.user.id)
+            .first()
+        )
 
         if obj:
             res = {
