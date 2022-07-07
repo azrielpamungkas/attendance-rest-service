@@ -47,9 +47,9 @@ class TeacherDashboard(APIView):
                     if attendance.clock_out != None:
                         data.append(["clock out", attendance.clock_out])
 
-            if len(data) == 0:
+            if len(data) != 0:
                 for d in data:
-                    res["recent_activity"] += {"type": d[0], "time": d[1]}
+                    res["recent_activity"].append({"type": d[0], "time": d[1]})
                 return Response(res)
             return Response(res)
         raise PermissionDenied
