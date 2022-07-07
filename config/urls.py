@@ -24,6 +24,7 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("", include("accounts.urls")),
     path("", include("students.urls")),
+    path("", include("teacher.urls")),
     path("", include("apps.attendances.urls")),
     path("redoc/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
 ]

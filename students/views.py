@@ -17,7 +17,6 @@ doc = StudentDoc()
 class StudentDashboard(APIView):
     @swagger_auto_schema(responses=doc.student_dashboard_get)
     def get(self, request, format=None):
-        print(request.META.get("SESSION_MANAGER", "---"))
         if request.user.groups.filter(name="student").exists():
             lecture_obj = current_lecture(request.user.id, ClassroomTimetable)
             attendace_obj = (
