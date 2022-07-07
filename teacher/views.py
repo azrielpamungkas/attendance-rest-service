@@ -72,7 +72,7 @@ class DetailPresence(APIView):
         if obj:
             res = {
                 "name": obj.subject.name,
-                "teacher": f"{obj.subject.first_name}",
+                "teacher": f"{obj.subject.teacher.first_name}",
                 "classroom": obj.subject.classroom.grade,
                 "time": f"{obj.start_time.strftime('%H:%M')} - {obj.end_time.strftime('%H:%M')} WIB",
                 "students": [],
