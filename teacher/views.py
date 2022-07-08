@@ -75,14 +75,17 @@ class TeacherDashboard(APIView):
                 },
                 "message": "",
             }
-            if attendace_obj != None:
+            if user_attendance != None:
                 res["status_button"]["clock_in"] = True
-            if attendace_obj != None:
-                if attendace_obj.clock_in != None and attendace_obj.clock_out == None:
+            if user_attendance != None:
+                if (
+                    user_attendance.clock_in != None
+                    and user_attendance.clock_out == None
+                ):
                     res["status_button"]["clock_out"] = True
                 elif (
-                    attendace_obj.obj.clock_time != None
-                    and attendace_obj.obj.clok_out != None
+                    user_attendance.obj.clock_time != None
+                    and user_attendance.obj.clok_out != None
                 ):
                     res["status_button"]["clock_in"] = False
                     res["status_button"]["clock_out"] = False
