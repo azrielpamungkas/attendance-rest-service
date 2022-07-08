@@ -121,10 +121,10 @@ class TeacherDashboard(APIView):
 
             res = {
                 "greet": greeting,
-                "work_time": (lambda x: None if x is None else x.work_time)(
+                "work_time": (lambda x: None if x is None else x.work_time.strftime("%H:%M"))(
                     attendance_timetable_obj
                 ),
-                "home_time": (lambda x: None if x is None else x.home_time)(
+                "home_time": (lambda x: None if x is None else x.home_time.strftime("%H:%M"))(
                     attendance_timetable_obj
                 ),
                 "user": {
@@ -163,7 +163,7 @@ class TeacherDashboard(APIView):
 
             if len(data) != 0:
                 for d in data:
-                    res["recent_activity"].append({"type": d[0], "time": d[1]})
+                    res["recent_activity"].append({"type": d[0], "time": d[1].strftime("%H:%M")})
                 return Response(res)
             return Response(res)
         raise PermissionDenied
