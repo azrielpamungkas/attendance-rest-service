@@ -43,12 +43,6 @@ class TeacherDashboard(APIView):
                 .filter(role="GRU")
                 .first()
             )
-            user_attendance = Attendance.objects.filter(
-                timetable=(lambda x: 192940129401 if x is None else x.id)(
-                    attendace_obj
-                ),
-                user=request.user.id,
-            ).first()
             if datetime.datetime.now().hour < 12:
                 greeting = "Selamat Pagi"
             elif datetime.datetime.now().hour < 15:
@@ -78,18 +72,19 @@ class TeacherDashboard(APIView):
                 },
                 "message": "",
             }
-            if attendace_obj != None:
-                res["status_button"]["clockIn"] = True
+            user_attendance = (
+                Attendance.objects.filter(timetable=attendace_obj.id)
+                .filter(user=request.user.id)
+                .first()
+            )
             if user_attendance != None:
-                if user_attendance.clock_in != None:
-                    res["status_button"]["clockIn"] = False
+                if user_attendance.clock_in != None and user_attendance.clock_out == None:
                     res["status_button"]["clockOut"] = True
-                if (
-                    user_attendance.clock_in != None
-                    and user_attendance.clock_out != None
-                ):
+                else:
                     res["status_button"]["clockIn"] = False
                     res["status_button"]["clockOut"] = False
+            else:
+                res["status_button"]["clockIn"] = True
 
             data = []
             for attendance in Attendance.objects.filter(user=request.user.id):
