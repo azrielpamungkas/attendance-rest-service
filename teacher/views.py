@@ -77,12 +77,13 @@ class TeacherDashboard(APIView):
                 },
                 "message": "",
             }
-            user_attendance = (
-                Attendance.objects.filter(user=request.user.id)
-                .filter(timetable=attendance_timetable_obj.id)
-                .first()
-            )
+
             if attendance_timetable_obj != None:
+                user_attendance = (
+                    Attendance.objects.filter(user=request.user.id)
+                    .filter(timetable=attendance_timetable_obj.id)
+                    .first()
+                )
                 if user_attendance != None:
                     if user_attendance.clock_out == None:
                         res["status_button"]["clockOut"] = True
@@ -149,12 +150,13 @@ class TeacherDashboard(APIView):
                 },
                 "message": "",
             }
-            user_attendance = (
-                Attendance.objects.filter(user=request.user.id)
-                .filter(timetable=attendance_timetable_obj.id)
-                .first()
-            )
+
             if attendance_timetable_obj != None:
+                user_attendance = (
+                    Attendance.objects.filter(user=request.user.id)
+                    .filter(timetable=attendance_timetable_obj.id)
+                    .first()
+                )
                 if user_attendance != None:
                     if user_attendance.clock_out == None:
                         res["status_button"]["clockOut"] = True
