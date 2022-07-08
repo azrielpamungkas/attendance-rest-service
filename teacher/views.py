@@ -75,7 +75,7 @@ class TeacherDashboard(APIView):
                 },
                 "message": "",
             }
-            if user_attendance != None:
+            if attendace_obj != None:
                 res["status_button"]["clock_in"] = True
             if user_attendance != None:
                 if (
