@@ -57,23 +57,109 @@ class TeacherDashboard(APIView):
 
             res = {
                 "greet": greeting,
-                "work_time": (
-                    lambda x: None if x is None else f"{x.work_time} - {x.home_time}"
-                )(attendace_obj),
+                "work_time": (lambda x: None if x is None else x.work_time)(
+                    attendace_obj
+                ),
+                "home_time": (lambda x: None if x is None else x.home_time)(
+                    attendace_obj
+                ),
                 "user": {
                     "first_name": request.user.first_name,
                     "last_name": request.user.last_name,
                     "address": detector(geo=self.request.query_params.get("geo")),
                 },
                 "recent_activity": [],
+                "status_button": {
+                    "clock_in": False,
+                    "clock_out": False,
+                },
+                "message": "",
             }
+            if attendace_obj != None:
+                res["status_button"]["clock_in"] = True
+            if attendace_obj != None:
+                if attendace_obj.clock_time != None and attendace_obj.clock_out == None:
+                    res["status_button"]["clock_out"] = True
+                elif (
+                    attendace_obj.obj.clock_time != None
+                    and attendace_obj.obj.clok_out != None
+                ):
+                    res["status_button"]["clock_in"] = False
+                    res["status_button"]["clock_out"] = False
 
             for attendance in Attendance.objects.filter(user=request.user.id):
                 data = []
                 if attendance.clock_in != None:
                     data.append(["clock in", attendance.clock_in])
-                    if attendance.clock_out != None:
-                        data.append(["clock out", attendance.clock_out])
+                if attendance.clock_out != None:
+                    data.append(["clock out", attendance.clock_out])
+
+            if len(data) != 0:
+                for d in data:
+                    res["recent_activity"].append({"type": d[0], "time": d[1]})
+                return Response(res)
+            return Response(res)
+        raise PermissionDenied
+
+    def post(self, request):
+        if request.user.groups.filter(name="teacher").exists():
+            attendace_obj = (
+                AttendanceTimetable.objects.filter(date=datetime.datetime.today())
+                .filter(role="GRU")
+                .first()
+            )
+            user_attendance = Attendance.objects.filter(
+                timetable=(lambda x: 192940129401 if x is None else x.id)(attendace_obj)
+            ).first()
+            if datetime.datetime.now().hour < 12:
+                greeting = "Selamat Pagi"
+            elif datetime.datetime.now().hour < 15:
+                greeting = "Selamat Siang"
+            elif datetime.datetime.now().hour < 18:
+                greeting = "Selamat Sore"
+            else:
+                greeting = "Selamat Malam"
+
+            res = {
+                "greet": greeting,
+                "work_time": (lambda x: None if x is None else x.work_time)(
+                    attendace_obj
+                ),
+                "home_time": (lambda x: None if x is None else x.home_time)(
+                    attendace_obj
+                ),
+                "user": {
+                    "first_name": request.user.first_name,
+                    "last_name": request.user.last_name,
+                    "address": detector(geo=self.request.query_params.get("geo")),
+                },
+                "recent_activity": [],
+                "status_button": {
+                    "clock_in": False,
+                    "clock_out": False,
+                },
+                "message": "",
+            }
+            if attendace_obj != None:
+                res["status_button"]["clock_in"] = True
+            if attendace_obj != None:
+                if attendace_obj.clock_time != None and attendace_obj.clock_out == None:
+                    res["status_button"]["clock_out"] = True
+                    res["message"] = "Anda berhasil clock-in"
+                elif (
+                    attendace_obj.obj.clock_time != None
+                    and attendace_obj.obj.clok_out != None
+                ):
+                    res["status_button"]["clock_in"] = False
+                    res["status_button"]["clock_out"] = False
+                    res["message"] = "Anda berhasil clock-out"
+
+            for attendance in Attendance.objects.filter(user=request.user.id):
+                data = []
+                if attendance.clock_in != None:
+                    data.append(["clock in", attendance.clock_in])
+                if attendance.clock_out != None:
+                    data.append(["clock out", attendance.clock_out])
 
             if len(data) != 0:
                 for d in data:
