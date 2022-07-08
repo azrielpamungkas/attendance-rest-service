@@ -138,24 +138,25 @@ class TeacherDashboard(APIView):
                 },
                 "recent_activity": [],
                 "status_button": {
-                    "clock_in": False,
-                    "clock_out": False,
+                    "clockIn": False,
+                    "clockOut": False,
                 },
                 "message": "",
             }
             if attendace_obj != None:
-                res["status_button"]["clock_in"] = True
-            if attendace_obj != None:
-                if attendace_obj.clock_time != None and attendace_obj.clock_out == None:
-                    res["status_button"]["clock_out"] = True
-                    res["message"] = "Anda berhasil clock-in"
-                elif (
-                    attendace_obj.obj.clock_time != None
-                    and attendace_obj.obj.clok_out != None
+                res["status_button"]["clockIn"] = True
+            if user_attendance != None:
+                if (
+                    user_attendance.clock_in != None
+                    and user_attendance.clock_out == None
                 ):
-                    res["status_button"]["clock_in"] = False
-                    res["status_button"]["clock_out"] = False
-                    res["message"] = "Anda berhasil clock-out"
+                    res["status_button"]["clockOut"] = True
+                elif (
+                    user_attendance.obj.clock_time != None
+                    and user_attendance.obj.clok_out != None
+                ):
+                    res["status_button"]["clockIn"] = False
+                    res["status_button"]["clockOut"] = False
 
             for attendance in Attendance.objects.filter(user=request.user.id):
                 data = []
