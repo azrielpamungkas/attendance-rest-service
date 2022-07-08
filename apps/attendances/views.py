@@ -86,13 +86,21 @@ class AttendanceView(APIView):
     @swagger_auto_schema(responses=doc.attendance_post)
     def post(self, request):
         time = datetime.datetime.now().time()
-        if request.user.groups.filter(name="student").exists():
-            attendance = (
-                AttendanceTimetable.objects.all()
-                .filter(date=datetime.date.today())
-                .filter(role="MRD")
-                .first()
-            )
+        if True:
+            if request.user.groups.filter(name="student").exists():
+                attendance = (
+                    AttendanceTimetable.objects.all()
+                    .filter(date=datetime.date.today())
+                    .filter(role="MRD")
+                    .first()
+                )
+            else:
+                attendance = (
+                    AttendanceTimetable.objects.all()
+                    .filter(date=datetime.date.today())
+                    .filter(role="GRU")
+                    .first()
+                )
             obj = Attendance.objects.filter(
                 user=request.user.id, timetable=attendance.id
             ).first()
