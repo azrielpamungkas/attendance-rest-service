@@ -70,8 +70,8 @@ class TeacherDashboard(APIView):
                 },
                 "recent_activity": [],
                 "status_button": {
-                    "clock_in": False,
-                    "clock_out": False,
+                    "clockIn": False,
+                    "clockOut": False,
                 },
                 "message": "",
             }
