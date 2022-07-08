@@ -90,8 +90,8 @@ class TeacherDashboard(APIView):
                     res["status_button"]["clockIn"] = False
                     res["status_button"]["clockOut"] = False
 
+            data = []
             for attendance in Attendance.objects.filter(user=request.user.id):
-                data = []
                 if attendance.clock_in != None:
                     data.append(["clock in", attendance.clock_in])
                 if attendance.clock_out != None:
