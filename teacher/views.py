@@ -44,7 +44,10 @@ class TeacherDashboard(APIView):
                 .first()
             )
             user_attendance = Attendance.objects.filter(
-                timetable=(lambda x: 192940129401 if x is None else x.id)(attendace_obj)
+                timetable=(lambda x: 192940129401 if x is None else x.id)(
+                    attendace_obj
+                ),
+                user=request.user.id,
             ).first()
             if datetime.datetime.now().hour < 12:
                 greeting = "Selamat Pagi"
