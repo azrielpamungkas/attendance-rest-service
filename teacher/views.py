@@ -36,7 +36,7 @@ class TeacherInfo(APIView):
 
 
 class TeacherDashboard(APIView):
-    def get(self, request, format=None):
+    def get(self, request):
         if request.user.groups.filter(name="teacher").exists():
             attendance_timetable_obj = (
                 AttendanceTimetable.objects.filter(date=datetime.datetime.today())
@@ -55,12 +55,12 @@ class TeacherDashboard(APIView):
 
             res = {
                 "greet": greeting,
-                "work_time": (lambda x: None if x is None else x.work_time)(
-                    attendance_timetable_obj
-                ),
-                "home_time": (lambda x: None if x is None else x.home_time)(
-                    attendance_timetable_obj
-                ),
+                "work_time": (
+                    lambda x: None if x is None else x.work_time.strftime("%H:%M")
+                )(attendance_timetable_obj),
+                "home_time": (
+                    lambda x: None if x is None else x.home_time.strftime("%H:%M")
+                )(attendance_timetable_obj),
                 "user": {
                     "first_name": request.user.first_name,
                     "last_name": request.user.last_name,
@@ -97,7 +97,9 @@ class TeacherDashboard(APIView):
 
             if len(data) != 0:
                 for d in data:
-                    res["recent_activity"].append({"type": d[0], "time": d[1]})
+                    res["recent_activity"].append(
+                        {"type": d[0], "time": d[1].strftime("%H:%M")}
+                    )
                 return Response(res)
             return Response(res)
         raise PermissionDenied
@@ -121,12 +123,12 @@ class TeacherDashboard(APIView):
 
             res = {
                 "greet": greeting,
-                "work_time": (lambda x: None if x is None else x.work_time.strftime("%H:%M"))(
-                    attendance_timetable_obj
-                ),
-                "home_time": (lambda x: None if x is None else x.home_time.strftime("%H:%M"))(
-                    attendance_timetable_obj
-                ),
+                "work_time": (
+                    lambda x: None if x is None else x.work_time.strftime("%H:%M")
+                )(attendance_timetable_obj),
+                "home_time": (
+                    lambda x: None if x is None else x.home_time.strftime("%H:%M")
+                )(attendance_timetable_obj),
                 "user": {
                     "first_name": request.user.first_name,
                     "last_name": request.user.last_name,
@@ -163,7 +165,9 @@ class TeacherDashboard(APIView):
 
             if len(data) != 0:
                 for d in data:
-                    res["recent_activity"].append({"type": d[0], "time": d[1].strftime("%H:%M")})
+                    res["recent_activity"].append(
+                        {"type": d[0], "time": d[1].strftime("%H:%M")}
+                    )
                 return Response(res)
             return Response(res)
         raise PermissionDenied
