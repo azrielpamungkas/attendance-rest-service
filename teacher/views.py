@@ -36,24 +36,25 @@ class TeacherInfo(APIView):
 
 
 class TeacherDashboard(APIView):
-    attendance_timetable_obj = (
-        AttendanceTimetable.objects.filter(date=datetime.datetime.today().date())
-        .filter(role="GRU")
-        .filter(
-            work_time__lte=datetime.datetime.now().time(),
-            home_time__gte=datetime.datetime.now().time(),
+    def __init__(self):
+        self.attendance_timetable_obj = (
+            AttendanceTimetable.objects.filter(date=datetime.datetime.today().date())
+            .filter(role="GRU")
+            .filter(
+                work_time__lte=datetime.datetime.now().time(),
+                home_time__gte=datetime.datetime.now().time(),
+            )
+            .first()
         )
-        .first()
-    )
 
-    if datetime.datetime.now().hour < 12:
-        greeting = "Selamat Pagi"
-    elif datetime.datetime.now().hour < 15:
-        greeting = "Selamat Siang"
-    elif datetime.datetime.now().hour < 18:
-        greeting = "Selamat Sore"
-    else:
-        greeting = "Selamat Malam"
+        if datetime.datetime.now().hour < 12:
+            self.greeting = "Selamat Pagi"
+        elif datetime.datetime.now().hour < 15:
+            self.greeting = "Selamat Siang"
+        elif datetime.datetime.now().hour < 18:
+            self.greeting = "Selamat Sore"
+        else:
+            self.greeting = "Selamat Malam"
 
     def get(self, request):
         if request.user.groups.filter(name="teacher").exists():
