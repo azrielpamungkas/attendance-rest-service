@@ -41,7 +41,6 @@ class TeacherDashboard(APIView):
         .filter(role="GRU")
         .filter(
             work_time__lte=datetime.datetime.now().time(),
-            home_time__gte=datetime.datetime.now().time(),
         )
         .first()
     )
