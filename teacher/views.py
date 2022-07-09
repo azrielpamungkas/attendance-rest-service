@@ -37,10 +37,11 @@ class TeacherInfo(APIView):
 
 class TeacherDashboard(APIView):
     attendance_timetable_obj = (
-        AttendanceTimetable.objects.filter(date=datetime.datetime.today())
+        AttendanceTimetable.objects.filter(date=datetime.datetime.today().date())
         .filter(role="GRU")
         .filter(
             work_time__lte=datetime.datetime.now().time(),
+            home_time__gte=datetime.datetime.now().time(),
         )
         .first()
     )
