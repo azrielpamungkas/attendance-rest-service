@@ -36,8 +36,17 @@ class TeacherInfo(APIView):
 
 
 class TeacherDashboard(APIView):
-    def __init__(self):
-        self.attendance_timetable_obj = (
+    if datetime.datetime.now().hour < 12:
+        greeting = "Selamat Pagi"
+    elif datetime.datetime.now().hour < 15:
+        greeting = "Selamat Siang"
+    elif datetime.datetime.now().hour < 18:
+        greeting = "Selamat Sore"
+    else:
+        greeting = "Selamat Malam"
+
+    def get(self, request):
+        attendance_timetable_obj = (
             AttendanceTimetable.objects.filter(date=datetime.datetime.today().date())
             .filter(role="GRU")
             .filter(
@@ -46,26 +55,15 @@ class TeacherDashboard(APIView):
             )
             .first()
         )
-
-        if datetime.datetime.now().hour < 12:
-            self.greeting = "Selamat Pagi"
-        elif datetime.datetime.now().hour < 15:
-            self.greeting = "Selamat Siang"
-        elif datetime.datetime.now().hour < 18:
-            self.greeting = "Selamat Sore"
-        else:
-            self.greeting = "Selamat Malam"
-
-    def get(self, request):
         if request.user.groups.filter(name="teacher").exists():
             res = {
                 "greet": self.greeting,
                 "work_time": (
                     lambda x: None if x is None else x.work_time.strftime("%H:%M")
-                )(self.attendance_timetable_obj),
+                )(attendance_timetable_obj),
                 "home_time": (
                     lambda x: None if x is None else x.home_time.strftime("%H:%M")
-                )(self.attendance_timetable_obj),
+                )(attendance_timetable_obj),
                 "user": {
                     "first_name": request.user.first_name,
                     "last_name": request.user.last_name,
@@ -79,10 +77,10 @@ class TeacherDashboard(APIView):
                 "message": "",
             }
 
-            if self.attendance_timetable_obj != None:
+            if attendance_timetable_obj != None:
                 user_attendance = (
                     Attendance.objects.filter(user=request.user.id)
-                    .filter(timetable=self.attendance_timetable_obj.id)
+                    .filter(timetable=attendance_timetable_obj.id)
                     .first()
                 )
                 if user_attendance != None:
@@ -111,15 +109,24 @@ class TeacherDashboard(APIView):
         raise PermissionDenied
 
     def post(self, request):
+        attendance_timetable_obj = (
+            AttendanceTimetable.objects.filter(date=datetime.datetime.today().date())
+            .filter(role="GRU")
+            .filter(
+                work_time__lte=datetime.datetime.now().time(),
+                home_time__gte=datetime.datetime.now().time(),
+            )
+            .first()
+        )
         if request.user.groups.filter(name="teacher").exists():
             res = {
                 "greet": self.greeting,
                 "work_time": (
                     lambda x: None if x is None else x.work_time.strftime("%H:%M")
-                )(self.attendance_timetable_obj),
+                )(attendance_timetable_obj),
                 "home_time": (
                     lambda x: None if x is None else x.home_time.strftime("%H:%M")
-                )(self.attendance_timetable_obj),
+                )(attendance_timetable_obj),
                 "user": {
                     "first_name": request.user.first_name,
                     "last_name": request.user.last_name,
@@ -133,10 +140,10 @@ class TeacherDashboard(APIView):
                 "message": "",
             }
 
-            if self.attendance_timetable_obj != None:
+            if attendance_timetable_obj != None:
                 user_attendance = (
                     Attendance.objects.filter(user=request.user.id)
-                    .filter(timetable=self.attendance_timetable_obj.id)
+                    .filter(timetable=attendance_timetable_obj.id)
                     .first()
                 )
                 if user_attendance != None:
