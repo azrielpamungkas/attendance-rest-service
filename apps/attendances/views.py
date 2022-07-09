@@ -106,7 +106,7 @@ class AttendanceView(APIView):
             ).first()
             if obj:
                 if obj.clock_in != None and obj.clock_out == None:
-                    if time >= attendance.home_time:
+                    if attendance.home_time >= time:
                         obj.clock_out = time
                         obj.save()
                         response = {
