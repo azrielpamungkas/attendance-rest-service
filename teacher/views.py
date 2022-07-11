@@ -10,29 +10,78 @@ from apps.classrooms.models import (
 from apps.attendances.models import AttendanceTimetable, Attendance
 from utils.gps import detector
 from utils.shortcuts import current_lecture_teacher
+from rest_framework.decorators import api_view
+
+# Teacher/class
+@api_view(["GET"])
+def teacher_classroom(request):
+    res = {
+        "classsrooms": [],
+        "user": {
+            "first_name": request.user.first_name,
+            "last_name": request.user.last_name,
+            "username": request.user.username,
+        },
+    }
+
+    subject_queryset = ClassroomSubject.objects.filter(teacher=request.user.id)
+    print(subject_queryset)
+    if subject_queryset:
+        for q in subject_queryset:
+            res["classsrooms"].append(
+                {
+                    "id": q.id,
+                    "subject": q.name,
+                    "grade": q.classroom.grade,
+                }
+            )
+    return Response(res)
 
 
-class TeacherInfo(APIView):
-    def get(self, request):
+@api_view(["GET"])
+def teacher_classroom_detail(request):
+    subject_id = request.GET.get("id")
+    obj = ClassroomAttendance.objects.filter(timetable__subject=subject_id)
+    if obj.count() != 0:
         res = {
-            "classrooms": [],
-            "user": {
-                "first_name": "Azriel",
-                "last_name": "Sebastian",
-                "username": "124124",
-            },
+            "subject": obj.first().timetable.subject.name,
+            "grade": obj.first().timetable.subject.classroom.grade,
+            "date": {},
         }
-        obj = ClassroomSubject.objects.filter(teacher=request.user.id)
-        if obj:
-            for sub in obj:
-                res["classrooms"].append(
-                    {
-                        "subject": sub.name,
-                        "grade": sub.classroom.grade,
-                    }
-                )
-            return Response(res)
+        for data in obj:
+            d = data.timetable.date.strftime("%A, %-d %B %Y")
+            res["date"].setdefault(d, [])
+            res["date"][d].append(
+                {
+                    "name": data.student.first_name + " " + data.student.last_name,
+                    "status": data.status,
+                }
+            )
         return Response(res)
+    return Response({})
+
+
+@api_view(["GET"])
+def teacher_account(request):
+    res = {
+        "classrooms": [],
+        "user": {
+            "first_name": request.user.first_name,
+            "last_name": request.user.last_name,
+            "username": request.user.username,
+        },
+    }
+    obj = ClassroomSubject.objects.filter(teacher=request.user.id)
+    if obj:
+        for sub in obj:
+            res["classrooms"].append(
+                {
+                    "subject": sub.name,
+                    "grade": sub.classroom.grade,
+                }
+            )
+        return Response(res)
+    return Response(res)
 
 
 class TeacherDashboard(APIView):
@@ -102,6 +151,7 @@ class TeacherDashboard(APIView):
                     )
                 return Response(res)
             return Response(res)
+
         raise PermissionDenied
 
     def post(self, request):
@@ -235,3 +285,21 @@ class DetailPresence(APIView):
                 "students": [],
             }
         )
+
+
+# {
+#     'subject': 'Matematik',
+#     'grade': 'XI RPl',
+#     'schedule' : [
+#         {'12 Juni 2022': [
+#             {'nama':'AGung',
+#             'status': 'Alpha'},
+#             {'nama':'Jame',
+#             'status': 'Hadir'}
+#         ]},
+#         {'12 Juni 2022': [
+#             {'nama':'AGung',
+#             'status': 'Alpha'}
+#         ]}
+#     ]
+# }
