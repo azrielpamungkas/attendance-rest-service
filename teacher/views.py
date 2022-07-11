@@ -64,12 +64,12 @@ def teacher_classroom_detail(request):
 @api_view(["GET"])
 def teacher_account(request):
     res = {
-        "classrooms": [],
         "user": {
             "first_name": request.user.first_name,
             "last_name": request.user.last_name,
             "username": request.user.username,
         },
+        "classrooms": [],
     }
     obj = ClassroomSubject.objects.filter(teacher=request.user.id)
     if obj:
