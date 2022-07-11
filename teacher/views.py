@@ -17,18 +17,13 @@ from rest_framework.decorators import api_view
 def teacher_classroom(request):
     res = {
         "classsrooms": [],
-        "user": {
-            "first_name": request.user.first_name,
-            "last_name": request.user.last_name,
-            "username": request.user.username,
-        },
     }
 
     subject_queryset = ClassroomSubject.objects.filter(teacher=request.user.id)
     print(subject_queryset)
     if subject_queryset:
         for q in subject_queryset:
-            res["classsrooms"].append(
+            res["classrooms"].append(
                 {
                     "id": q.id,
                     "subject": q.name,
