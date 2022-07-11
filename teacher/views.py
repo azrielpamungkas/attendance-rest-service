@@ -16,7 +16,7 @@ from rest_framework.decorators import api_view
 @api_view(["GET"])
 def teacher_classroom(request):
     res = {
-        "classsrooms": [],
+        "classrooms": [],
     }
 
     subject_queryset = ClassroomSubject.objects.filter(teacher=request.user.id)
