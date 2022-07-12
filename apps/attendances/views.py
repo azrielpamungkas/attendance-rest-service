@@ -118,10 +118,8 @@ class AttendanceView(APIView):
                         return Response(response)
                     return Response(
                         {
-                            "error": {
-                                "status": "invalid_clock_out",
-                                "message": "Anda belum bisa clock out untuk saat ini",
-                            }
+                            "error": "invalid_clock_out",
+                            "message": "Anda belum bisa clock out untuk saat ini",
                         }
                     )
                 return Response(
