@@ -4,10 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from apps.classrooms.models import (
     ClassroomAttendance,
+    ClassroomJournal,
     ClassroomSubject,
     ClassroomTimetable,
 )
 from apps.attendances.models import AttendanceTimetable, Attendance
+from teacher.serializers import TeacherJournalSerializer
 from utils.gps import detector
 from utils.shortcuts import current_lecture_teacher
 from rest_framework.decorators import api_view
@@ -31,6 +33,94 @@ def teacher_classroom(request):
                 }
             )
     return Response(res)
+
+
+@api_view(["GET"])
+def teacher_activity(request):
+    res = []
+    datenow = datetime.datetime.now().date()
+    year = datenow.year
+    month = datenow.month
+
+    obj = Attendance.objects.filter(
+        timetable__date__year__gte=year,
+        timetable__date__month__gte=month,
+        timetable__date__year__lte=year,
+        timetable__date__month__lte=month,
+    )
+
+    for day in range(datenow.min.day, datenow.max.day):
+        if obj.filter(timetable__date__day=day).exists():
+            attendance = obj.get(timetable__date__day=day)
+            history = {
+                "day": day,
+                "clock_in": attendance.clock_in,
+                "clock_out": attendance.clock_out,
+                "status": attendance.status,
+            }
+        else:
+            history = {
+                "day": day,
+                "clock_in": "-",
+                "clock_out": "-",
+                "status": "off",
+            }
+        res.append(history)
+    return Response(res)
+
+
+@api_view(["GET"])
+def teacher_journal_list(request):
+    res = []
+    subject_id = request.GET.get("id")
+    print(subject_id, type(subject_id))
+    obj = ClassroomJournal.objects.filter(subject_grade=subject_id).filter(
+        subject_grade__teacher=request.user.id
+    )
+    if obj.count() != 0:
+        journal = obj.first()
+        res.append(
+            {
+                "description": journal.description,
+                "date": journal.timetable.date.strftime("%d %B, %Y"),
+            }
+        )
+        return Response(res)
+    return Response(res)
+
+
+@api_view(["GET", "POST"])
+def teacher_journal(request):
+    current_class = (
+        ClassroomTimetable.objects.all()
+        .filter(date=datetime.date.today())
+        .filter(start_time__lte=datetime.datetime.now().time())
+        .filter(end_time__gt=datetime.datetime.now().time())
+        .filter(subject__teacher=request.user.id)
+    )
+    if current_class.count() != 0:
+        c = current_class.first()
+        print(c.id, "------")
+        if request.method == "POST":
+            serializer = TeacherJournalSerializer(data=request.data)
+            if serializer.is_valid():
+                obj = ClassroomJournal.objects.create(
+                    timetable=c,
+                    description=serializer.data["description"],
+                )
+                obj.save()
+                return Response("valid")
+            return Response(
+                serializer.errors,
+            )
+        return Response(
+            {
+                "subject": c.subject.name,
+                "grade": c.subject.classroom.grade,
+            }
+        )
+
+    return Response(None)
 
 
 @api_view(["GET"])

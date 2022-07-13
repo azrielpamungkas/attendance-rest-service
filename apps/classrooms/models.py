@@ -1,3 +1,4 @@
+from pyexpat import model
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
@@ -81,3 +82,18 @@ class ClassroomAttendance(models.Model):
 
     class Meta:
         verbose_name_plural = "Kehadiran Kelas"
+
+
+class ClassroomJournal(models.Model):
+    subject_grade = models.ForeignKey(
+        ClassroomSubject, on_delete=models.CASCADE, blank=True, null=True
+    )
+    timetable = models.ForeignKey(ClassroomTimetable, on_delete=models.CASCADE)
+    description = models.TextField()
+
+    def save(self, *args, **kwargs):
+        self.subject_grade = self.timetable.subject
+        super(ClassroomJournal, self).save(*args, **kwargs)
+
+    def __str__(self) -> str:
+        return "Jurnal id {}".format(self.id)
