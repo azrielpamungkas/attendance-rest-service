@@ -78,13 +78,13 @@ def teacher_journal_list(request):
         subject_grade__teacher=request.user.id
     )
     if obj.count() != 0:
-        journal = obj.first()
-        res.append(
-            {
-                "description": journal.description,
-                "date": journal.timetable.date.strftime("%d %B, %Y"),
-            }
-        )
+        for journal in obj:
+            res.append(
+                {
+                    "description": journal.description,
+                    "date": journal.timetable.date.strftime("%d %B, %Y"),
+                }
+            )
         return Response(res)
     return Response(res)
 
