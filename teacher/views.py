@@ -1,8 +1,10 @@
 import datetime
 from django.core.exceptions import PermissionDenied
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.views import APIView
 from apps.classrooms.models import (
+    Classroom,
     ClassroomAttendance,
     ClassroomJournal,
     ClassroomSubject,
@@ -100,26 +102,29 @@ def teacher_journal(request):
     )
     if current_class.count() != 0:
         c = current_class.first()
-        print(c.id, "------")
-        if request.method == "POST":
-            serializer = TeacherJournalSerializer(data=request.data)
-            if serializer.is_valid():
-                obj = ClassroomJournal.objects.create(
-                    timetable=c,
-                    description=serializer.data["description"],
+        if not ClassroomJournal.objects.filter(timetable=c).exists():
+            if request.method == "POST":
+                serializer = TeacherJournalSerializer(data=request.data)
+                if serializer.is_valid():
+                    obj = ClassroomJournal.objects.create(
+                        timetable=c,
+                        description=serializer.data["description"],
+                    )
+                    obj.save()
+                    return Response("valid")
+                return Response(
+                    serializer.errors,
                 )
-                obj.save()
-                return Response("valid")
             return Response(
-                serializer.errors,
+                {
+                    "subject": c.subject.name,
+                    "grade": c.subject.classroom.grade,
+                }
             )
         return Response(
-            {
-                "subject": c.subject.name,
-                "grade": c.subject.classroom.grade,
-            }
+            {"message": "Hanya dapat input jurnal satu kali"},
+            status=status.HTTP_406_NOT_ACCEPTABLE,
         )
-
     return Response(None)
 
 
@@ -230,7 +235,8 @@ class TeacherDashboard(APIView):
                     data.append(["clock out", attendance.clock_out])
 
             if len(data) != 0:
-                for d in data:
+                data.reverse()
+                for d in data[:4]:
                     res["recent_activity"].append(
                         {"type": d[0], "time": d[1].strftime("%H:%M")}
                     )

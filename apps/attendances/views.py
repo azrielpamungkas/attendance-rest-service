@@ -8,10 +8,6 @@ import datetime
 from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
 
-
-# Create your views here.
-# Bikin serializer untuk ini agar bisa detect geo nantinya
-
 from .docs import AttendanceDoc
 
 doc = AttendanceDoc()
@@ -113,7 +109,7 @@ class AttendanceView(APIView):
                             "status": 200,
                             "clock_out": f"{time.hour}:{time.minute}",
                             "next_attendance_status": "Done!",
-                            "message": "anda berhasil clock out",
+                            "message": "Anda berhasil clock out",
                         }
                         return Response(response)
                     return Response(
