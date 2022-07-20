@@ -24,11 +24,12 @@ class LeaveView(CreateAPIView):
         classroom_timetable_q = ClassroomTimetable.objects.filter(
             date__range=(today, today + datetime.timedelta(days=10))
         )
+        print(classroom_timetable_q)
         attendance_timetable_q = AttendanceTimetable.objects.filter(
             date__range=(today, today + datetime.timedelta(days=10))
         )
         res = {
-            "history": [],
+            "history": {},
             "attendanceTimetable": [
                 {"id": data.id, "name": data.__str__()}
                 for data in attendance_timetable_q
@@ -42,36 +43,21 @@ class LeaveView(CreateAPIView):
         queryset = Leave.objects.filter(user=request.user.id)
         print(queryset)
         for q in queryset:
-            print(q)
-            if q.leave_mode:
-                res["history"].append(
-                    {
-                        "type": (lambda x: "Sakit" if x else "Ijin")(q.leave_type),
-                        "mode": (lambda x: "Full Day" if x else "Half Day")(
-                            q.leave_mode
-                        ),
-                        "reason": q.reason,
-                        # "date": q.scheduled_attendance.date.strftime("%d %m %Y"),
-                        "status": (lambda x: "Approved" if x else "Sedang Menunggu")(
-                            q.approve
-                        ),
-                        "test": "Test1",
-                    }
-                )
-            else:
-                res.append(
-                    {
-                        "type": (lambda x: "Sakit" if x else "Ijin")(q.leave_type),
-                        "mode": (lambda x: "Full Day" if x else "Half Day")(
-                            q.leave_mode
-                        ),
-                        "reason": q.reason,
-                        # "date": q.scheduled_lecture.date.date.strftime("%d %m %Y"),
-                        "status": (lambda x: "Approved" if x else "Sedang Menunggu")(
-                            q.approve
-                        ),
-                    }
-                )
+            month_year = "{} {}".format(q.created_at.strftime("%b"), q.created_at.year)
+            print(month_year)
+            res["history"].setdefault(month_year, [])
+            res["history"][month_year].append(
+                {
+                    "type": (lambda x: "Sakit" if x else "Ijin")(q.leave_type),
+                    "mode": (lambda x: "Full Day" if x else "Half Day")(q.leave_mode),
+                    "reason": q.reason,
+                    # "date": q.scheduled_attendance.date.strftime("%d %m %Y"),
+                    "status": (lambda x: "Approved" if x else "Sedang Menunggu")(
+                        q.approve
+                    ),
+                    "date": q.created_at.strftime("%d %B %Y"),
+                }
+            )
         return Response(res)
 
     def post(self, request, *args, **kwargs):

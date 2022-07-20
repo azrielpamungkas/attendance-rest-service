@@ -25,21 +25,22 @@ class StudentDashboard(APIView):
                 .filter(role="MRD")
                 .first()
             )
-            subject = (lambda obj: None if obj is None else obj.subject.name)(
-                lecture_obj
-            )
-            teacher_first_name = (
-                lambda obj: None if obj is None else obj.subject.teacher.first_name
-            )(lecture_obj)
-            teacher_last_name = (
-                lambda obj: None if obj is None else obj.subject.teacher.last_name
-            )(lecture_obj)
-            start_time = (
-                lambda obj: None if obj is None else obj.start_time.strftime("%H:%M")
-            )(lecture_obj)
-            end_time = (
-                lambda obj: None if obj is None else obj.end_time.strftime("%H:%M")
-            )(lecture_obj)
+            if lecture_obj is None:
+                subject = None
+                teacher_first_name = None
+                teacher_last_name = None
+                start_time = None
+                end_time = None
+                work_time = None
+                home_time = None
+            else:
+                subject = lecture_obj.subject.name
+                teacher_first_name = lecture_obj.subject.teacher.first_name
+                teacher_last_name = lecture_obj.subject.teacher.last_name
+                start_time = lecture_obj.start_time.strftime("%H:%M")
+                end_time = lecture_obj.end_time.strftime("%H:%M")
+                work_time = None
+                home_time = None
 
             currentTime = auto_now()
             if currentTime.hour < 12:
@@ -60,17 +61,13 @@ class StudentDashboard(APIView):
                         "last_name": teacher_last_name,
                     },
                     "time": {
-                        "start_time": (lambda x: None if x is None else x)(start_time),
-                        "end_time": (lambda x: None if x is None else x)(end_time),
+                        "start_time": start_time,
+                        "end_time": end_time,
                     },
                 },
                 "currentAttendance": {
-                    "work_time": (lambda x: None if x is None else x.work_time)(
-                        attendace_obj
-                    ),
-                    "home_time": (lambda x: None if x is None else x.home_time)(
-                        attendace_obj
-                    ),
+                    "work_time": work_time,
+                    "home_time": home_time,
                 },
                 "user": {
                     "first_name": request.user.first_name,

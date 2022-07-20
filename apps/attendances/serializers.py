@@ -20,7 +20,6 @@ class LeaveHalfSer(serializers.ModelSerializer):
             "classroom_scheduled",
             "reason",
             "attachment",
-            "leave_mode",
         )
 
 
@@ -33,5 +32,4 @@ class LeaveFullSer(serializers.ModelSerializer):
             "attendance_scheduled",
             "reason",
             "attachment",
-            "leave_mode",
         )

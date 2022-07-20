@@ -36,14 +36,24 @@ class Attendance(models.Model):
 
 
 class Leave(models.Model):
+    LEAVE_TYPE_CHOICHES = [
+        (0, "Ijin"),
+        (1, "Sakit"),
+    ]
+
+    LEAVE_MODE_CHOICHES = [
+        (0, "Full"),
+        (1, "Half"),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
-    leave_mode = models.SmallIntegerField()
-    leave_type = models.SmallIntegerField()
+    leave_mode = models.SmallIntegerField(blank=True, choices=LEAVE_MODE_CHOICHES)
+    leave_type = models.SmallIntegerField(blank=True, choices=LEAVE_TYPE_CHOICHES)
     attendance_scheduled = models.ManyToManyField(AttendanceTimetable, blank=True)
     classroom_scheduled = models.ManyToManyField(ClassroomTimetable, blank=True)
     reason = models.TextField()
     attachment = models.ImageField(null=True)
     approve = models.BooleanField(null=True, default=None)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user.username + " " + self.reason
