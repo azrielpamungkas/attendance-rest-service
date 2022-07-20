@@ -51,10 +51,10 @@ class LeaveView(CreateAPIView):
                     "type": (lambda x: "Sakit" if x else "Ijin")(q.leave_type),
                     "mode": (lambda x: "Full Day" if x else "Half Day")(q.leave_mode),
                     "reason": q.reason,
-                    # "date": q.scheduled_attendance.date.strftime("%d %m %Y"),
                     "status": (lambda x: "Approved" if x else "Sedang Menunggu")(
                         q.approve
                     ),
+                    "status_code": (lambda x: 1 if x else 0)(q.approve),
                     "date": q.created_at.strftime("%d %B %Y"),
                 }
             )
