@@ -44,7 +44,7 @@ def teacher_activity(request):
     year = datenow.year
     month = datenow.month
 
-    obj = Attendance.objects.filter(
+    obj = Attendance.objects.filter(user=request.user.id).filter(
         timetable__date__year__gte=year,
         timetable__date__month__gte=month,
         timetable__date__year__lte=year,
