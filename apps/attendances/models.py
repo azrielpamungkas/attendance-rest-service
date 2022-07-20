@@ -1,7 +1,6 @@
-from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
-from apps.classrooms.models import ClassroomSubject
+from apps.classrooms.models import ClassroomSubject, ClassroomTimetable
 
 
 class AttendanceTimetable(models.Model):
@@ -37,16 +36,13 @@ class Attendance(models.Model):
 
 
 class Leave(models.Model):
-    class TypeLeave(models.TextChoices):
-        HALF = "HALF", "1"
-        FULL = "FULL", "2"
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    category = models.IntegerField(choices=TypeLeave.choices, default=1)
-    date = models.DateField()
-    lecture = models.ManyToManyField(ClassroomSubject)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
+    leave_mode = models.SmallIntegerField()
+    leave_type = models.SmallIntegerField()
+    attendance_scheduled = models.ManyToManyField(AttendanceTimetable, blank=True)
+    classroom_scheduled = models.ManyToManyField(ClassroomTimetable, blank=True)
     reason = models.TextField()
-    attachment = models.ImageField()
+    attachment = models.ImageField(null=True)
     approve = models.BooleanField(null=True, default=None)
 
     def __str__(self):

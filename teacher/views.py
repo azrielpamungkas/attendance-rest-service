@@ -56,8 +56,8 @@ def teacher_activity(request):
             attendance = obj.get(timetable__date__day=day)
             history = {
                 "day": day,
-                "clock_in": attendance.clock_in,
-                "clock_out": attendance.clock_out,
+                "clock_in": attendance.clock_in.strftime("%H:%M"),
+                "clock_out": attendance.clock_out.strftime("%H:%M"),
                 "status": attendance.status,
             }
         else:
@@ -376,21 +376,3 @@ class DetailPresence(APIView):
                 "students": [],
             }
         )
-
-
-# {
-#     'subject': 'Matematik',
-#     'grade': 'XI RPl',
-#     'schedule' : [
-#         {'12 Juni 2022': [
-#             {'nama':'AGung',
-#             'status': 'Alpha'},
-#             {'nama':'Jame',
-#             'status': 'Hadir'}
-#         ]},
-#         {'12 Juni 2022': [
-#             {'nama':'AGung',
-#             'status': 'Alpha'}
-#         ]}
-#     ]
-# }

@@ -1,4 +1,7 @@
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
+
+from apps.classrooms.models import ClassroomTimetable
 from . import serializers
 from utils.gps import detector
 from .models import Attendance, AttendanceTimetable, Leave
@@ -11,6 +14,82 @@ from drf_yasg.utils import swagger_auto_schema
 from .docs import AttendanceDoc
 
 doc = AttendanceDoc()
+
+
+class LeaveView(CreateAPIView):
+    queryset = ""
+
+    def get(self, request):
+        today = datetime.datetime.today().date()
+        classroom_timetable_q = ClassroomTimetable.objects.filter(
+            date__range=(today, today + datetime.timedelta(days=10))
+        )
+        attendance_timetable_q = AttendanceTimetable.objects.filter(
+            date__range=(today, today + datetime.timedelta(days=10))
+        )
+        res = {
+            "history": [],
+            "attendanceTimetable": [
+                {"id": data.id, "name": data.__str__()}
+                for data in attendance_timetable_q
+            ],
+            "classroomTimetable": [
+                {"id": data.id, "name": data.__str__()}
+                for data in classroom_timetable_q
+            ],
+        }
+
+        queryset = Leave.objects.filter(user=request.user.id)
+        print(queryset)
+        for q in queryset:
+            print(q)
+            if q.leave_mode:
+                res["history"].append(
+                    {
+                        "type": (lambda x: "Sakit" if x else "Ijin")(q.leave_type),
+                        "mode": (lambda x: "Full Day" if x else "Half Day")(
+                            q.leave_mode
+                        ),
+                        "reason": q.reason,
+                        # "date": q.scheduled_attendance.date.strftime("%d %m %Y"),
+                        "status": (lambda x: "Approved" if x else "Sedang Menunggu")(
+                            q.approve
+                        ),
+                        "test": "Test1",
+                    }
+                )
+            else:
+                res.append(
+                    {
+                        "type": (lambda x: "Sakit" if x else "Ijin")(q.leave_type),
+                        "mode": (lambda x: "Full Day" if x else "Half Day")(
+                            q.leave_mode
+                        ),
+                        "reason": q.reason,
+                        # "date": q.scheduled_lecture.date.date.strftime("%d %m %Y"),
+                        "status": (lambda x: "Approved" if x else "Sedang Menunggu")(
+                            q.approve
+                        ),
+                    }
+                )
+        return Response(res)
+
+    def post(self, request, *args, **kwargs):
+        print("request post: ", request.data)
+        return super().post(request, *args, **kwargs)
+
+    def get_serializer_class(self, *args, **kwargs):
+        if self.request.GET.get("type") == "half":
+            return serializers.LeaveHalfSer
+        else:
+            return serializers.LeaveFullSer
+
+    def perform_create(self, serializer):
+        if self.request.GET.get("type") == "half":
+            leave_mode = 0
+        else:
+            leave_mode = 1
+        serializer.save(user=self.request.user, leave_mode=leave_mode)
 
 
 class AttendanceView(APIView):
@@ -129,7 +208,7 @@ class AttendanceView(APIView):
                     user=User.objects.get(id=request.user.id),
                     timetable=AttendanceTimetable.objects.get(id=attendance.id),
                     clock_in=time,
-                    status=(lambda x: "H" if x <= attendance.work_time else "T"),
+                    status=(lambda x: "H" if x <= attendance.work_time else "T")(time),
                 )
                 response = {
                     "status": 200,
@@ -139,23 +218,3 @@ class AttendanceView(APIView):
                 }
                 return Response(response)
         return PermissionDenied
-
-
-class LeaveView(APIView):
-    def get(self, request):
-        leave_obj = Leave.objects.filter(user=request.user.id)
-        res = {}
-        for obj in leave_obj:
-            key = obj.date.strftime("%d %Y")
-            res.setdefault(key, [])
-            res[key].append(
-                {
-                    "id": obj.id,
-                    "type": obj.type,
-                    "date": obj.date,
-                    "status": lambda x: "Waiting for Approval"
-                    if x is None
-                    else ("Approved" if x else "Cancelled")(obj.approve),
-                }
-            )
-        return Response(res)
